@@ -305,7 +305,7 @@ class admin_view_sendlist extends ecjia_admin {
 	 * 获取邮件队列
 	 */
 	private function get_send_list() {
-		$db_email_sendlist = RC_DB::table('email_sendlist as e');
+		$db_email_sendlist = RC_DB::connection(config('cashier.database_connection', 'default'))->table('email_sendlist as e');
 		
 		$typemail_id = isset($_GET['typemail_id']) ? $_GET['typemail_id'] : 0;
 		
@@ -337,7 +337,7 @@ class admin_view_sendlist extends ecjia_admin {
 	}
 	
 	private function get_email_setting() {
-		$mail_config = RC_DB::table('shop_config')->where('parent_id', 5)->orderby('id', 'asc')->get();
+		$mail_config = RC_DB::connection(config('cashier.database_connection', 'default'))->table('shop_config')->where('parent_id', 5)->orderby('id', 'asc')->get();
 		$arr = array();
 		if (!empty($mail_config)) {
 			foreach ($mail_config as $v){

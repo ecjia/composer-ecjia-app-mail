@@ -85,7 +85,7 @@ class AdminMailSettingsController extends EcjiaAdminController
         $data = $this->request->input('value');
 
         foreach ($data as $id => $value) {
-            RC_DB::table('shop_config')->where('id', $id)->update(['value' => trim($value)]);
+            RC_DB::connection(config('cashier.database_connection', 'default'))->table('shop_config')->where('id', $id)->update(['value' => trim($value)]);
         }
 
         /* 记录日志 */

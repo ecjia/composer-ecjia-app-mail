@@ -59,7 +59,7 @@ class email_list_model extends Component_Model_Model
 
     public function email_list_select($stat, $field = '*')
     {
-        return RC_DB::table('email_list')
+        return RC_DB::connection(config('cashier.database_connection', 'default'))->table('email_list')
             ->where('stat', $stat)
             ->select($field)
             ->get();
@@ -67,7 +67,7 @@ class email_list_model extends Component_Model_Model
 
     public function email_list_batch($ids, $type, $data = array())
     {
-        $db_email_list = RC_DB::table('email_list');
+        $db_email_list = RC_DB::connection(config('cashier.database_connection', 'default'))->table('email_list');
         if ($type == 'select') {
             return $db_email_list->whereIn('id', $ids)->get();
         } elseif ($type == 'delete') {

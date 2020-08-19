@@ -60,14 +60,14 @@ class email_sendlist_model extends Component_Model_Model
     public function email_sendlist_delete($id, $in = false)
     {
         if ($in) {
-            return RC_DB::table('email_sendlist')->whereIn('id', $id)->delete();
+            return RC_DB::connection(config('cashier.database_connection', 'default'))->table('email_sendlist')->whereIn('id', $id)->delete();
         }
-        return RC_DB::table('email_sendlist')->where('id', $id)->delete();
+        return RC_DB::connection(config('cashier.database_connection', 'default'))->table('email_sendlist')->where('id', $id)->delete();
     }
 
     public function email_sendlist_find($id, $order = array())
     {
-        $db_email_sendlist = RC_DB::table('email_sendlist');
+        $db_email_sendlist = RC_DB::connection(config('cashier.database_connection', 'default'))->table('email_sendlist');
         if (!empty($order)) {
             foreach ($order as $key => $val) {
                 $db_email_sendlist->orderBy($key, $val);
@@ -78,7 +78,7 @@ class email_sendlist_model extends Component_Model_Model
 
     public function email_sendlist_select($ids = array(), $order = array())
     {
-        $db_email_sendlist = RC_DB::table('email_sendlist');
+        $db_email_sendlist = RC_DB::connection(config('cashier.database_connection', 'default'))->table('email_sendlist');
 
         if (!empty($order)) {
             foreach ($order as $key => $val) {
@@ -93,7 +93,7 @@ class email_sendlist_model extends Component_Model_Model
 
     public function email_sendlist_update($id, $data)
     {
-        return RC_DB::table('email_sendlist')->where('id', $id)->update($data);
+        return RC_DB::connection(config('cashier.database_connection', 'default'))->table('email_sendlist')->where('id', $id)->update($data);
     }
 }
 

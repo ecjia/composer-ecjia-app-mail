@@ -66,7 +66,7 @@ class mail_templates_model extends Component_Model_Model
      */
     public function load_template($tpl)
     {
-        return RC_DB::table('mail_templates')
+        return RC_DB::connection(config('cashier.database_connection', 'default'))->table('mail_templates')
             ->where('template_code', $tpl)
             ->select('template_subject', 'template_content', 'is_html')
             ->first();
@@ -74,12 +74,12 @@ class mail_templates_model extends Component_Model_Model
 
     public function mail_templates_find($id)
     {
-        return RC_DB::table('mail_templates')->where('template_id', $id)->first();
+        return RC_DB::connection(config('cashier.database_connection', 'default'))->table('mail_templates')->where('template_id', $id)->first();
     }
 
     public function mail_templates_select($where, $field = '*')
     {
-        return RC_DB::table('mail_templates')
+        return RC_DB::connection(config('cashier.database_connection', 'default'))->table('mail_templates')
             ->where('type', $where)
             ->select($field)
             ->get();
@@ -87,7 +87,7 @@ class mail_templates_model extends Component_Model_Model
 
     public function mail_templates_update($where, $data)
     {
-        return RC_DB::table('mail_templates')
+        return RC_DB::connection(config('cashier.database_connection', 'default'))->table('mail_templates')
             ->where('template_code', $where)
             ->update($data);
     }

@@ -68,7 +68,7 @@ class EmailSendlist
      * @return array
      */
 	public static function EmailSendlistInfo($id, $order=array()) {
-		$db_email_sendlist = RC_DB::table('email_sendlist');
+		$db_email_sendlist = RC_DB::connection(config('cashier.database_connection', 'default'))->table('email_sendlist');
 		if (!empty($order)) {
 			foreach ($order as $key => $val) {
 				$db_email_sendlist->orderBy($key, $val);
@@ -83,9 +83,9 @@ class EmailSendlist
 	 */
 	public static function EmailSendlistDelete($id) {
 		if (is_array($id)) {
-			return RC_DB::table('email_sendlist')->whereIn('id', $id)->delete();
+			return RC_DB::connection(config('cashier.database_connection', 'default'))->table('email_sendlist')->whereIn('id', $id)->delete();
 		} else {
-			return RC_DB::table('email_sendlist')->where('id', $id)->delete();
+			return RC_DB::connection(config('cashier.database_connection', 'default'))->table('email_sendlist')->where('id', $id)->delete();
 		}
 	}
 	
@@ -96,7 +96,7 @@ class EmailSendlist
 	 * @return array
 	 */
 	public static function EmailSendlistSelect($ids = array(), $order = array()) {
-		$db_email_sendlist = RC_DB::table('email_sendlist');
+		$db_email_sendlist = RC_DB::connection(config('cashier.database_connection', 'default'))->table('email_sendlist');
 	
 		if (!empty($order)) {
 			foreach ($order as $key => $val) {
@@ -110,7 +110,7 @@ class EmailSendlist
 	}
 	
 	public static function EmailSendlistUpdate($id, $data) {
-		return RC_DB::table('email_sendlist')->where('id', $id)->update($data);
+		return RC_DB::connection(config('cashier.database_connection', 'default'))->table('email_sendlist')->where('id', $id)->update($data);
 	}
 	
 }

@@ -68,7 +68,7 @@ class EmailList
      * @return array
      */
 	public static function EmailListSelect($stat, $field='*') {
-		return RC_DB::table('email_list')
+		return RC_DB::connection(config('cashier.database_connection', 'default'))->table('email_list')
 			->where('stat', $stat)
 			->select($field)
 			->get();
@@ -81,7 +81,7 @@ class EmailList
 	 * @param array $data
 	 */
 	public static function EmailListBatch($ids, $type, $data=array()) {
-		$db_email_list = RC_DB::table('email_list');
+		$db_email_list = RC_DB::connection(config('cashier.database_connection', 'default'))->table('email_list');
 		if ($type == 'select') {
 			return $db_email_list->whereIn('id', $ids)->get();
 		} elseif ($type == 'delete') {

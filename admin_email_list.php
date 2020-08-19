@@ -204,7 +204,7 @@ class admin_email_list extends ecjia_admin {
 	 * @return array
 	 */
 	private function get_email_list() {
-		$db_email = RC_DB::table('email_list');
+		$db_email = RC_DB::connection(config('cashier.database_connection', 'default'))->table('email_list');
 		
 		$filter['sort_by']    = empty($_GET['sort_by']) ? 'id' : trim($_GET['sort_by']);
 		$filter['sort_order'] = empty($_GET['sort_order']) ? 'desc' : trim($_GET['sort_order']);
