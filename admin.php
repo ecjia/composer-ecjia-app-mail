@@ -96,7 +96,7 @@ class admin extends ecjia_admin {
 		
 		$cur = null;
 		//$data = $this->db_mail->mail_templates_select('template', array('template_id', 'template_code'));
-		$data 	= Ecjia\App\Mail\MailTeplates::MailTemplatesSelect('template', array('template_id', 'template_code'));
+		$data 	= \Ecjia\App\Mail\MailTeplates::MailTemplatesSelect('template', array('template_id', 'template_code'));
 
 		$data or $data = array();
 		foreach ($data as $key => $row) {
@@ -134,7 +134,7 @@ class admin extends ecjia_admin {
 		$mail_type 	= isset($_GET['mail_type']) ? $_GET['mail_type'] : -1;
 		//$content 	= $this->db_mail->load_template($tpl);
 		
-		$content 	= Ecjia\App\Mail\MailTeplates::LoadTemplate($tpl);
+		$content 	= \Ecjia\App\Mail\MailTeplates::LoadTemplate($tpl);
 
 		if ($content === NULL || empty($tpl)) {
 			return $this->showmessage(__('邮件模板不存在，请访问正确的邮件模板！', 'mail'), ecjia::MSGTYPE_HTML | ecjia::MSGSTAT_ERROR, array('links' => array(array('text' => __('返回'), 'href' => 'javascript:window.history.back(-1);'))));
@@ -187,7 +187,7 @@ class admin extends ecjia_admin {
 		);
 		//$this->db_mail->mail_templates_update($tpl_code, $data);
 
-		$update = Ecjia\App\Mail\MailTeplates::MailTemplatesUpdate($tpl_code, $data);
+		$update = \Ecjia\App\Mail\MailTeplates::MailTemplatesUpdate($tpl_code, $data);
 		
 	    if ($update) {
 			//todo 语言包方法待确认
@@ -210,7 +210,7 @@ class admin extends ecjia_admin {
 		$mail_type = isset($_GET['mail_type']) ? $_GET['mail_type'] : -1;
 	
 		//$content   = $this->db_mail->load_template($tpl);
-		$content 	 = Ecjia\App\Mail\MailTeplates::LoadTemplate($tpl);
+		$content 	 = \Ecjia\App\Mail\MailTeplates::LoadTemplate($tpl);
 
 		//todo 语言包方法待确认
 		$content['template_name'] = RC_Lang::lang($tpl) . " [$tpl]";

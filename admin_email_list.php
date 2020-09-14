@@ -103,7 +103,7 @@ class admin_email_list extends ecjia_admin {
 		$this->admin_priv('email_list_manage', ecjia::MSGTYPE_JSON);
 		
 		//$emails = $this->db_email_list->email_list_select(1, 'email');
-		$emails = Ecjia\App\Mail\EmailSendlist::EmailListSelect(1, 'email');
+		$emails = \Ecjia\App\Mail\EmailSendlist::EmailListSelect(1, 'email');
 		
 		$out = '';
 		if (!empty($emails)) {
@@ -155,12 +155,12 @@ class admin_email_list extends ecjia_admin {
 		
 		if (!empty($ids)){
 			//$info = $this->db_email_list->email_list_batch($ids, 'select');
-			$info 	= Ecjia\App\Mail\EmailList::EmailListBatch($ids, 'select');
+			$info 	= \Ecjia\App\Mail\EmailList::EmailListBatch($ids, 'select');
 			
 			switch ($action) {
 				case 'remove':
 					//$this->db_email_list->email_list_batch($ids, 'delete');
-					Ecjia\App\Mail\EmailList::EmailListBatch($ids, 'delete');
+					\Ecjia\App\Mail\EmailList::EmailListBatch($ids, 'delete');
 					
 					foreach ($info as $key => $v) {
 						ecjia_admin::admin_log(sprintf(__('邮件地址是 %s', 'mail'), $v['email']).'，'.sprintf(__('邮件编号是 %s', 'mail'), $v['id']), 'batch_remove', 'subscription_email');
@@ -172,7 +172,7 @@ class admin_email_list extends ecjia_admin {
 				case 'exit' :
 					$data = array('stat' => 2);
 					//$update = $this->db_email_list->email_list_batch($ids, 'update', $data);
-					$update = Ecjia\App\Mail\EmailList::EmailListBatch($ids, 'update', $data);
+					$update = \Ecjia\App\Mail\EmailList::EmailListBatch($ids, 'update', $data);
 					
 					foreach ($info as $key => $v) {
 						ecjia_admin::admin_log(sprintf(__('邮件地址是 %s', 'mail'), $v['email']).'，'.sprintf(__('邮件编号是 %s', 'mail'), $v['id']), 'batch_exit', 'subscription_email');
@@ -184,7 +184,7 @@ class admin_email_list extends ecjia_admin {
 				case 'ok' :
 					$data = array('stat' => 1);
 					//$update = $this->db_email_list->email_list_batch($ids, 'update', $data);
-					$update = Ecjia\App\Mail\EmailList::EmailListBatch($ids, 'update', $data);
+					$update = \Ecjia\App\Mail\EmailList::EmailListBatch($ids, 'update', $data);
 					
 					foreach ($info as $key => $v) {
 						ecjia_admin::admin_log(sprintf(__('邮件地址是 %s', 'mail'), $v['email']).'，'.sprintf(__('邮件编号是 %s', 'mail'), $v['id']), 'batch_ok', 'subscription_email');
