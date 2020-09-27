@@ -103,7 +103,7 @@ class admin_email_list extends ecjia_admin {
 		$this->admin_priv('email_list_manage', ecjia::MSGTYPE_JSON);
 		
 		//$emails = $this->db_email_list->email_list_select(1, 'email');
-		$emails = \Ecjia\App\Mail\EmailSendlist::EmailListSelect(1, 'email');
+		$emails = Ecjia\App\Mail\EmailList::EmailListSelect(1, 'email');
 		
 		$out = '';
 		if (!empty($emails)) {
