@@ -21,14 +21,14 @@
 		<form id="form-privilege" class="form-horizontal" name="editForm" action="{$form_action}" method="post" enctype="multipart/form-data" >
 			<fieldset>
 				<div class="control-group formSep">
-					<label class="control-label">{t domain="sms"}名称{/t}</label>
+					<label class="control-label">{t domain="mail"}名称{/t}</label>
 					<div class="controls">
 						<input class="w350" name="channel_name" type="text" value="{$channel.channel_name|escape}" size="40" />
 						<span class="input-must"><span class="require-field" style="color:#FF0000,">*</span></span>
 					</div>
 				</div>
 				<div class="control-group formSep">
-					<label class="control-label">{t domain="sms"}描述{/t}</label>
+					<label class="control-label">{t domain="mail"}描述{/t}</label>
 					<div class="controls">
 						<textarea class="w350" name="channel_desc" cols="10" rows="6">{$channel.channel_desc|escape}</textarea>
 						<span class="input-must"><span class="require-field" style="color:#FF0000,">*</span></span>
@@ -58,7 +58,7 @@
 				<!-- {/foreach} -->
 				<div class="control-group">
 					<div class="controls">
-						<button class="btn btn-gebo" type="submit">{t domain="sms"}确定{/t}</button>
+						<button class="btn btn-gebo" type="submit">{t domain="mail"}确定{/t}</button>
 						<input type="hidden" name="channel_id" value="{$channel.channel_id}" />
 						<input type="hidden" name="channel_code" value="{$channel.channel_code}" />
 						<input type="hidden" name="channel_type" value="{$channel.channel_type}" />
