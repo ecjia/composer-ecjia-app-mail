@@ -34,7 +34,7 @@
 				<span class="balance" style="color: #08c;font-size:14px;"></span>
 				<!-- {if $val.enabled == 1} -->
 					<div class="edit-list">
-						<a class="data-pjax" href='{RC_Uri::url("mail/admin_plugin/edit", "code={$val.channel_code}")}' title='{t domain="mail"}编辑{/t}'>{t domain="mail"}编辑{/t}</a>&nbsp;|&nbsp;
+						<a href='{RC_Uri::url("mail/admin_plugin/edit", "code={$val.channel_code}")}' title='{t domain="mail"}编辑{/t}'>{t domain="mail"}编辑{/t}</a>&nbsp;|&nbsp;
 						<a class="switch ecjiafc-red" href="javascript:;" data-url='{RC_Uri::url("mail/admin_plugin/switch_state", "code={$val.channel_code}")}&enabled=0' title='{t domain="mail"}禁用服务{/t}'>{t domain="mail"}禁用服务{/t}</a>&nbsp;|&nbsp;
 					</div>
 				<!-- {else} -->
