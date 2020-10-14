@@ -44,9 +44,11 @@
 						<textarea class="w350" id="cfg_value[]" name="cfg_value[]" cols="80" rows="5">{$config.value}</textarea>
 						<!-- {elseif $config.type == "select"} -->
 						<select class="w350" id="cfg_value[]" name="cfg_value[]"  >
-							<!-- {html_options options=$config.range selected=$config.value} -->
+                            <!-- {html_options options=$config.range selected=$config.value} -->
 						</select>
-						<!-- {/if} -->
+                        <!-- {elseif $config.type == "radiobox"} -->
+                        <!-- {html_radios options=$config.range name=$config.name values=array_keys($config.range) output=array_values($config.range) selected=$config.value labels=0} -->
+                        <!-- {/if} -->
 						<input name="cfg_name[]" type="hidden" value="{$config.name}" />
 						<input name="cfg_type[]" type="hidden" value="{$config.type}" />
 						<input name="cfg_lang[]" type="hidden" value="{$config.lang}" />
