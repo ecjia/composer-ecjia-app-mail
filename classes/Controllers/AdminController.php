@@ -44,13 +44,24 @@
 //
 //  ---------------------------------------------------------------------------------
 //
-defined('IN_ECJIA') or exit('No permission resources.');
+namespace Ecjia\App\Mail\Controllers;
+
+use admin_nav_here;
+use ecjia;
+use ecjia_admin;
+use ecjia_screen;
+use RC_App;
+use RC_Lang;
+use RC_Script;
+use RC_Style;
+use RC_Time;
+use RC_Uri;
 
 /**
  * ECJIA 管理中心模板管理程序
  * @author songqian
  */
-class admin extends ecjia_admin
+class AdminController extends AdminBase
 {
 
     public function __construct()
@@ -65,7 +76,7 @@ class admin extends ecjia_admin
         RC_Script::enqueue_script('jquery-form');
         RC_Script::enqueue_script('smoke');
         RC_Script::enqueue_script('jquery-dataTables-bootstrap');
-        RC_Script::enqueue_script('mail_template', RC_App::apps_url('statics/js/mail_template.js', __FILE__), array(), false, 1);
+        RC_Script::enqueue_script('mail_template', RC_App::apps_url('statics/js/mail_template.js', $this->__FILE__), array(), false, 1);
 
         RC_Script::localize_script('mail_template', 'js_lang_mail_template', config('app-mail::jslang.mail_template_page'));
 

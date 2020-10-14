@@ -44,13 +44,24 @@
 //
 //  ---------------------------------------------------------------------------------
 //
-defined('IN_ECJIA') or exit('No permission resources.');
+namespace Ecjia\App\Mail\Controllers;
+
+use admin_nav_here;
+use ecjia;
+use ecjia_admin;
+use ecjia_page;
+use ecjia_screen;
+use RC_App;
+use RC_DB;
+use RC_Script;
+use RC_Style;
+use RC_Uri;
 
 /**
  * 邮件订阅---模块的逻辑处理
  * @author songqian
  */
-class admin_email_list extends ecjia_admin
+class AdminEmailListController extends AdminBase
 {
     //private $db_email_list;
 
@@ -70,7 +81,7 @@ class admin_email_list extends ecjia_admin
         RC_Style::enqueue_style('uniform-aristo');
         RC_Script::enqueue_script('jquery-uniform');
         RC_Script::enqueue_script('jquery-chosen');
-        RC_Script::enqueue_script('email_list', RC_App::apps_url('statics/js/email_list.js', __FILE__), array(), false, 1);
+        RC_Script::enqueue_script('email_list', RC_App::apps_url('statics/js/email_list.js', $this->__FILE__), array(), false, 1);
     }
 
     public function init()
@@ -105,7 +116,7 @@ class admin_email_list extends ecjia_admin
         $this->admin_priv('email_list_manage', ecjia::MSGTYPE_JSON);
 
         //$emails = $this->db_email_list->email_list_select(1, 'email');
-        $emails = Ecjia\App\Mail\EmailList::EmailListSelect(1, 'email');
+        $emails = \Ecjia\App\Mail\EmailList::EmailListSelect(1, 'email');
 
         $out = '';
         if (!empty($emails)) {

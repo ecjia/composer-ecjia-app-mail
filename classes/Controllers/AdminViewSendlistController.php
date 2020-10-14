@@ -44,13 +44,25 @@
 //
 //  ---------------------------------------------------------------------------------
 //
-defined('IN_ECJIA') or exit('No permission resources.');
+namespace Ecjia\App\Mail\Controllers;
+
+use admin_nav_here;
+use ecjia;
+use ecjia_admin;
+use ecjia_page;
+use ecjia_screen;
+use RC_App;
+use RC_DB;
+use RC_Mail;
+use RC_Script;
+use RC_Style;
+use RC_Uri;
 
 /**
  * ECJia 邮件队列管理
  * @author songqian
  */
-class admin_view_sendlist extends ecjia_admin
+class AdminViewSendlistController extends AdminBase
 {
 
     public function __construct()
@@ -62,7 +74,7 @@ class admin_view_sendlist extends ecjia_admin
         RC_Script::enqueue_script('smoke');
         RC_Style::enqueue_style('chosen');
         RC_Style::enqueue_style('uniform-aristo');
-        RC_Script::enqueue_script('view_sendlist', RC_App::apps_url('statics/js/view_sendlist.js', __FILE__));
+        RC_Script::enqueue_script('view_sendlist', RC_App::apps_url('statics/js/view_sendlist.js', $this->__FILE__));
         RC_Script::enqueue_script('jquery-uniform');
         RC_Script::enqueue_script('jquery-chosen');
 
@@ -111,11 +123,9 @@ class admin_view_sendlist extends ecjia_admin
         $this->admin_priv('email_sendlist_delete', ecjia::MSGTYPE_JSON);
 
         $id = intval($_GET['id']);
-        //$info = $this->db_email_sendlist->email_sendlist_find($id);
-        $info = Ecjia\App\Mail\EmailSendlist::EmailSendlistInfo($id);
-        //$this->db_email_sendlist->email_sendlist_delete($id);
+        $info = \Ecjia\App\Mail\EmailSendlist::EmailSendlistInfo($id);
 
-        Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($id);
+        \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($id);
 
         ecjia_admin::admin_log(sprintf(__('邮件标题是 %s', 'mail'), $info['template_subject']) . '，' . sprintf(__('邮件地址是 %s', 'mail'), $info['email']), 'remove', 'subscription_email');
         return $this->showmessage(sprintf(__('共删除 %d 条记录，删除成功！', 'mail'), 1), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
@@ -140,13 +150,10 @@ class admin_view_sendlist extends ecjia_admin
             $ids = explode(',', $ids);
         }
         if (!empty($ids)) {
-            //$info = $this->email_sendlist_view->email_sendlist_select($ids);
             $info = \Ecjia\App\Mail\EmailSendlist::EmailSendlistSelect($ids);
 
             switch ($action) {
                 case 'batchdel':
-                    //$this->db_email_sendlist->email_sendlist_delete($ids, true);
-
                     \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($ids);
 
                     foreach ($info as $key => $v) {
@@ -156,7 +163,6 @@ class admin_view_sendlist extends ecjia_admin
                     return $this->showmessage(sprintf(__('共删除 %d 条记录，删除成功！', 'mail'), count($ids)), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('mail/admin_view_sendlist/init')));
                     break;
                 case 'batchsend' :
-                    //$data = $this->db_email_sendlist->email_sendlist_select($ids, array('pri' => 'DESC', 'last_send' => 'ASC'));
                     $data = \Ecjia\App\Mail\EmailSendlist::EmailSendlistSelect($ids, array('pri' => 'DESC', 'last_send' => 'ASC'));
 
 
@@ -165,7 +171,6 @@ class admin_view_sendlist extends ecjia_admin
                         foreach ($data as $key => $row) {
                             //发送列表不为空，邮件地址为空
                             if (!empty($row['id']) && empty($row['email'])) {
-                                //$this->db_email_sendlist->email_sendlist_delete($row['id']);
                                 \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($row['id']);
 
                                 $record_count['empty_mail']++;
@@ -173,7 +178,6 @@ class admin_view_sendlist extends ecjia_admin
                             }
 
                             //查询相关模板
-                            //$rt = $this->db_mail_temp->mail_templates_find($row['template_id']);
                             $rt = \Ecjia\App\Mail\MailTeplates::MailTemplatesInfo($row['template_id']);
 
                             //如果是模板，则将已存入email_sendlist的内容作为邮件内容
@@ -188,7 +192,6 @@ class admin_view_sendlist extends ecjia_admin
                                 if (RC_Mail::send_mail('', $row['email'], $rt['template_subject'], $rt['template_content'], $rt['is_html'])) {
                                     ecjia_admin::admin_log(sprintf(__('邮件标题是 %s', 'mail'), $rt['template_subject']) . '，' . sprintf(__('邮件地址是 %s', 'mail'), $row['email']), 'batch_send', 'email');
                                     //发送成功,从列表中删除
-                                    //$this->db_email_sendlist->email_sendlist_delete($row['id']);
                                     \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($row['id']);
 
                                     $record_count['send_success']++;
@@ -197,23 +200,20 @@ class admin_view_sendlist extends ecjia_admin
                                     if ($row['error'] < 3) {
                                         $time = time();
                                         $data = array(
-                                            'error'     => error + 1,
+                                            'error'     => $row['error'] + 1,
                                             'pri'       => 0,
                                             'last_send' => $time
                                         );
-                                        //$this->db_email_sendlist->email_sendlist_update($row['id'], $data);
                                         \Ecjia\App\Mail\EmailSendlist::EmailSendlistUpdate($row['id'], $data);
 
                                     } else {
                                         //将出错超次的纪录删除
-                                        //$this->db_email_sendlist->email_sendlist_delete($row['id']);
                                         \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($row['id']);
                                     }
                                     $record_count['send_error']++;
                                 }
                             } else {
                                 //无效的邮件队列
-                                //$this->db_email_sendlist->email_sendlist_delete($row['id']);
                                 \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($row['id']);
 
                                 $record_count['noeffect']++;
@@ -237,7 +237,6 @@ class admin_view_sendlist extends ecjia_admin
     {
         $this->admin_priv('email_sendlist_send', ecjia::MSGTYPE_JSON);
 
-        //$data = $this->db_email_sendlist->email_sendlist_select('', array('pri' => 'DESC', 'last_send' => 'ASC'));
         $data = \Ecjia\App\Mail\EmailSendlist::EmailSendlistSelect('', array('pri' => 'DESC', 'last_send' => 'ASC'));
 
         if (!empty($data)) {
@@ -245,14 +244,12 @@ class admin_view_sendlist extends ecjia_admin
             foreach ($data as $key => $row) {
                 //发送列表不为空，邮件地址为空
                 if (!empty($row['id']) && empty($row['email'])) {
-                    //$this->db_email_sendlist->email_sendlist_delete($row['id']);
                     \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($row['id']);
 
                     $record_count['empty_mail']++;
                     continue;
                 }
                 //查询相关模板
-                //$rt = $this->db_mail_temp->mail_templates_find($row['template_id']);
                 $rt = \Ecjia\App\Mail\MailTeplates::MailTemplatesInfo($row['template_id']);
 
                 //如果是模板，则将已存入email_sendlist的内容作为邮件内容
@@ -268,7 +265,6 @@ class admin_view_sendlist extends ecjia_admin
                     if (RC_Mail::send_mail('', $row['email'], $rt['template_subject'], $rt['template_content'], $rt['is_html'])) {
                         //发送成功,从列表中删除
                         ecjia_admin::admin_log(sprintf(__('邮件标题是 %s', 'mail'), $rt['template_subject']) . '，' . sprintf(__('邮件地址是 %s', 'mail'), $row['email']), 'all_send', 'email');
-                        //$this->db_email_sendlist->email_sendlist_delete($row['id']);
                         \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($row['id']);
 
                         $record_count['send_success']++;
@@ -277,17 +273,15 @@ class admin_view_sendlist extends ecjia_admin
                         if ($row['error'] < 3) {
                             $time = time();
                             $data = array(
-                                'error'     => error + 1,
+                                'error'     => $row['error'] + 1,
                                 'pri'       => 0,
                                 'last_send' => $time
                             );
-                            //$this->db_email_sendlist->email_sendlist_update($row['id'], $data);
                             \Ecjia\App\Mail\EmailSendlist::EmailSendlistUpdate($row['id'], $data);
 
                             $record_count['send_error']++;
                         } else {
                             //将出错超次的纪录删除
-                            //$this->db_email_sendlist->email_sendlist_delete($row['id']);
                             \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($row['id']);
 
                             $record_count['send_error']++;
@@ -295,7 +289,6 @@ class admin_view_sendlist extends ecjia_admin
                     }
                 } else {
                     //无效的邮件队列
-                    //$this->db_email_sendlist->email_sendlist_delete($row['id']);
                     \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($row['id']);
 
                     $record_count['noeffect']++;

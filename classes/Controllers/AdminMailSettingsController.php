@@ -6,7 +6,6 @@ namespace Ecjia\App\Mail\Controllers;
 
 use admin_nav_here;
 use ecjia;
-use Ecjia\System\BaseController\EcjiaAdminController;
 use ecjia_admin;
 use ecjia_admin_log;
 use ecjia_screen;
@@ -19,16 +18,12 @@ use RC_Script;
 use RC_Style;
 use RC_Uri;
 
-class AdminMailSettingsController extends EcjiaAdminController
+class AdminMailSettingsController extends AdminBase
 {
-
-    private $__FILE__;
 
     public function __construct()
     {
         parent::__construct();
-
-        $this->__FILE__ = dirname(dirname(__FILE__));
 
         RC_Style::enqueue_style('chosen');
         RC_Style::enqueue_style('uniform-aristo');
