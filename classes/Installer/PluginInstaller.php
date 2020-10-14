@@ -2,7 +2,7 @@
 
 namespace Ecjia\App\Mail\Installer;
 
-use Ecjia\Component\Plugin\Storages\SmsPluginStorage;
+use Ecjia\Component\Plugin\Storages\MailPluginStorage;
 use ecjia_plugin;
 use RC_DB;
 use RC_Plugin;
@@ -17,7 +17,7 @@ class PluginInstaller extends \Ecjia\Component\Plugin\Installer\PluginInstaller
     {
         $plugin_file = RC_Plugin::plugin_basename( $this->plugin_file );
 
-        (new SmsPluginStorage())->addPlugin($plugin_file);
+        (new MailPluginStorage())->addPlugin($plugin_file);
 
         $code = $this->getConfigByKey('mail_code');
 
@@ -88,7 +88,7 @@ class PluginInstaller extends \Ecjia\Component\Plugin\Installer\PluginInstaller
             return ecjia_plugin::add_error('plugin_uninstall_error', __('邮件发送方式CODE不能为空', 'mail'));
         }
 
-        (new PluginUninstaller($code, new SmsPluginStorage()))->uninstall();
+        (new PluginUninstaller($code, new MailPluginStorage()))->uninstall();
 
         return true;
     }
