@@ -73,8 +73,10 @@ class AdminPluginController extends AdminBase
     {
         parent::__construct();
 
+        RC_Style::enqueue_style('uniform-aristo');
         RC_Script::enqueue_script('jquery-validate');
         RC_Script::enqueue_script('jquery-form');
+        RC_Script::enqueue_script('jquery-uniform');
         RC_Script::enqueue_script('smoke');
 
         RC_Script::enqueue_script('bootstrap-editable.min', RC_Uri::admin_url('statics/lib/x-editable/bootstrap-editable/js/bootstrap-editable.min.js'));
