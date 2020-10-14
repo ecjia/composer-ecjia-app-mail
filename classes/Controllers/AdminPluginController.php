@@ -79,11 +79,11 @@ class AdminPluginController extends AdminBase
         RC_Script::enqueue_script('bootstrap-editable.min', RC_Uri::admin_url('statics/lib/x-editable/bootstrap-editable/js/bootstrap-editable.min.js'));
         RC_Style::enqueue_style('bootstrap-editable', RC_Uri::admin_url('statics/lib/x-editable/bootstrap-editable/css/bootstrap-editable.css'));
 
-        RC_Script::enqueue_script('sms_channel', RC_App::apps_url('statics/js/sms_channel.js', $this->__FILE__));
-        RC_Script::localize_script('sms_channel', 'js_lang_sms_channel', config('app-sms::jslang.sms_channel'));
+        RC_Script::enqueue_script('mail_channel', RC_App::apps_url('statics/js/sms_channel.js', $this->__FILE__));
+        RC_Script::localize_script('mail_channel', 'js_lang_sms_channel', config('app-sms::jslang.sms_channel'));
 
-        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('短信渠道', 'sms'), RC_Uri::url('sms/admin_plugin/init')));
-        ecjia_screen::get_current_screen()->set_parentage('sms', 'sms/admin_plugin.php');
+        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('邮件渠道', 'mail'), RC_Uri::url('mail/admin_plugin/init')));
+        ecjia_screen::get_current_screen()->set_parentage('mail', 'mail/admin_plugin.php');
     }
 
     /**
@@ -91,7 +91,7 @@ class AdminPluginController extends AdminBase
      */
     public function init()
     {
-        $this->admin_priv('sms_channel_manage');
+        $this->admin_priv('mail_channel_manage');
 
         $this->assign('ur_here', __('邮件渠道', 'mail'));
 
@@ -109,12 +109,12 @@ class AdminPluginController extends AdminBase
      */
     public function edit()
     {
-        $this->admin_priv('sms_channel_update');
+        $this->admin_priv('mail_channel_update');
 
-        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('编辑短信渠道', 'mail')));
+        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('编辑邮件渠道', 'mail')));
 
-        $this->assign('action_link', array('text' => __('短信渠道', 'mail'), 'href' => RC_Uri::url('sms/admin_plugin/init')));
-        $this->assign('ur_here', __('编辑短信渠道', 'mail'));
+        $this->assign('action_link', array('text' => __('邮件渠道', 'mail'), 'href' => RC_Uri::url('sms/admin_plugin/init')));
+        $this->assign('ur_here', __('编辑邮件渠道', 'mail'));
         $this->assign('form_action', RC_Uri::url('mail/admin_plugin/update'));
 
         $channel_code = !empty($_GET['code']) ? trim($_GET['code']) : '';
@@ -139,7 +139,7 @@ class AdminPluginController extends AdminBase
                 'code' => $channel_code,
                 'from' => 'edit',
             ]);
-            $msg = sprintf(__('<strong>温馨提示：</strong>该短信插件已经丢失，请确认插件文件已经放入"/content/plugins/"下，
+            $msg = sprintf(__('<strong>温馨提示：</strong>该邮件插件已经丢失，请确认插件文件已经放入"/content/plugins/"下，
                 如需继续，请点击<a class="switch" href="javascript:;" data-url="%s">删除</a>，然后重新安装该插件。', 'mail'), $gourl);
             ecjia_screen::get_current_screen()->add_admin_notice(new admin_notice($msg, 'alert-error'));
         }

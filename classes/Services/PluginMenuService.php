@@ -63,7 +63,7 @@ class PluginMenuService
      */
     public function handle(& $options)
     {
-        $menus = ecjia_admin::make_admin_menu('sms_list', __('邮件渠道', 'mail'), RC_Uri::url('mail/admin_plugin/init'), 1)->add_purview('notification_manage')->add_base('mail');
+        $menus = ecjia_admin::make_admin_menu('mail_channel', __('邮件渠道', 'mail'), RC_Uri::url('mail/admin_plugin/init'), 10)->add_purview('notification_manage')->add_base('mail');
 
         $menus = RC_Hook::apply_filters('mail_plugin_menu_api', $menus);
 
