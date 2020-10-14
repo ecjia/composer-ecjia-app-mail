@@ -49,6 +49,7 @@ namespace Ecjia\App\Mail\Controllers;
 use admin_nav_here;
 use admin_notice;
 use ecjia;
+use Ecjia\App\Mail\MailPlugin;
 use Ecjia\App\Sms\Installer\PluginUninstaller;
 use Ecjia\Component\Plugin\Storages\SmsPluginStorage;
 use ecjia_admin;
@@ -113,7 +114,7 @@ class AdminPluginController extends AdminBase
 
         ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('编辑邮件渠道', 'mail')));
 
-        $this->assign('action_link', array('text' => __('邮件渠道', 'mail'), 'href' => RC_Uri::url('sms/admin_plugin/init')));
+        $this->assign('action_link', array('text' => __('邮件渠道', 'mail'), 'href' => RC_Uri::url('mail/admin_plugin/init')));
         $this->assign('ur_here', __('编辑邮件渠道', 'mail'));
         $this->assign('form_action', RC_Uri::url('mail/admin_plugin/update'));
 
@@ -131,7 +132,7 @@ class AdminPluginController extends AdminBase
                     $code_list[$value['name']] = $value['value'];
                 }
             }
-            $sms_handle = with(new \Ecjia\App\Sms\SmsPlugin)->channel($channel_code);
+            $sms_handle = with(new MailPlugin())->channel($channel_code);
             $channel_config = $sms_handle->makeFormData($code_list);
         }
         catch (InvalidArgumentException $exception) {
