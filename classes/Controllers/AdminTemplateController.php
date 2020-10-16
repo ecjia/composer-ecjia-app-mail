@@ -177,16 +177,16 @@ class AdminTemplateController extends AdminBase
 	    $channel_code = trim($_POST['channel_code']);
 	    $event = with(new EventFactory)->event($code);
 
-	    $desc = [];
+        $hits = [];
 	    $getValueHit = $event->getValueHit();
 	    if (!empty($getValueHit)) {
-	    	$desc[] = sprintf(__('可用变量：%s', 'mail'), $getValueHit);
+            $hits[] = sprintf(__('可用变量：%s', 'mail'), $getValueHit);
 	    }
-	    $desc[] = __('变量使用说明：变量不限位置摆放，可自由摆放，但变量不可自定义名称，需保持与以上名称一致。', 'mail');
+        $hits[] = __('变量使用说明：变量不限位置摆放，可自由摆放，但变量不可自定义名称，需保持与以上名称一致。', 'mail');
 	    	    
 	    $template = $event->getTemplate();
 
-	    $desc = implode('<br>', $desc);
+	    $desc = implode('<br>', $hits);
 
 	    return $this->showmessage('', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array(
 	        'content' => '<span class="help-block">'.$desc.'</span>',
@@ -239,23 +239,24 @@ class AdminTemplateController extends AdminBase
 		$this->admin_priv('mail_template_update');
 
 		ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('邮件模板', 'mail')));
-		
-		$this->assign('ur_here', __('编辑邮件模板', 'mail'));
-		$this->assign('action_link', array('href' => RC_Uri::url('push/admin_template/init'), 'text' => __('邮件模板列表', 'push')));
-	
-		$template_code_list = $this->template_code_list();
-		$existed = RC_DB::connection('ecjia')->table('notification_templates')->where('channel_code', $_GET['channel_code'])->where('template_code', '!=', $_GET['event_code'])->select('template_code', 'template_subject')->get();
-		if (!empty($existed)) {
-			foreach ($existed as $value) {
-				$existed_list[$value['template_code']] = $value['template_subject']. ' [' .  $value['template_code'] . ']';
-			}
-			$res = array_diff($template_code_list, $existed_list);
-			$template_code_list = $res;
-		}
+
+        $this->assign('ur_here', __('编辑邮件模板', 'mail'));
+
+        $action_links = (new ActionLinkGroup())->addLink(
+            new ActionLink(RC_Uri::url('mail/admin_template/init'), __('邮件模板列表', 'mail'), 'fontello-icon-reply')
+        );
+        $render = (new ActionLinkRender($action_links))->render();
+
+		$this->assign('action_links', $render);
+
+
+        $template_code_list = (new TemplateCodeAvailableOptions())();
 		
 		$this->assign('template_code_list', $template_code_list);
 
-		$id = intval($_GET['id']);
+
+        $id = intval($_GET['id']);
+
 		$data = RC_DB::connection('ecjia')->table('notification_templates')->where('id', $id)->first();
 		$this->assign('data', $data);
 		
@@ -263,19 +264,23 @@ class AdminTemplateController extends AdminBase
 		$this->assign('channel_code', $channel_code);
 		
 		$event_code = trim($_GET['event_code']);
+
 		$event = with(new EventFactory)->event($event_code);
 		
-		$desc = [];
+		$hits = [];
 		$getValueHit = $event->getValueHit();
 		if (!empty($getValueHit)) {
-			$desc[] = sprintf(__('可用变量：%s', 'push'), $getValueHit);
+            $hits[] = sprintf(__('可用变量：%s', 'push'), $getValueHit);
 		}
-		$desc[] = __('变量使用说明：变量不限位置摆放，可自由摆放，但变量不可自定义名称，需保持与以上名称一致。', 'push');
+        $hits[] = __('变量使用说明：变量不限位置摆放，可自由摆放，但变量不可自定义名称，需保持与以上名称一致。', 'mail');
+
+        $desc = implode('<br>', $hits);
+
 		$this->assign('desc', $desc);
 		
 		$this->assign('form_action', RC_Uri::url('mail/admin_template/update'));
 
-        return $this->display('push_template_info.dwt');
+        return $this->display('mail_template_info.dwt');
 	}
 	
 	/**
