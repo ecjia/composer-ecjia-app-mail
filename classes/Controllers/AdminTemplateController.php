@@ -106,7 +106,7 @@ class AdminTemplateController extends AdminBase
 	/**
 	 * 消息模板
 	 */
-	public function init ()
+	public function init()
     {
 		$this->admin_priv('mail_template_manage');
 		
@@ -185,7 +185,12 @@ class AdminTemplateController extends AdminBase
 	    	    
 	    $template = $event->getTemplate();
 
-	    return $this->showmessage('', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('content' => $desc, 'template' => $template));
+	    $desc = implode('<br>', $desc);
+
+	    return $this->showmessage('', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array(
+	        'content' => '<span class="help-block">'.$desc.'</span>',
+            'template' => $template,
+        ));
 	}
 	
 	/**

@@ -43,14 +43,7 @@
                     </label>
 					<div class="controls">
                         {ecjia:editor content=$data.template_content}
-						<span class="help-block">
-							{if $desc}
-								<!-- {foreach from=$desc item=list} -->
-									{$list}<br>
-								<!-- {/foreach} -->
-							{/if}
-						
-						</span>
+						<span class="help-block">{$desc}</span>
 					</div>
 				</div>
 
