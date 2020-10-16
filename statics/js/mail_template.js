@@ -1,8 +1,8 @@
 // JavaScript Document
 ;(function (app, $) {
-    app.mail_template = {
+    app.mail_template_list = {
         init: function () {
-            app.mail_template.data_table();
+            this.data_table();
         },
  
         data_table: function () {
@@ -14,16 +14,16 @@
                 "aaSorting": [[2, "asc"]],
                 "oLanguage": {
                     "oPaginate": {
-                        "sFirst": js_lang_mail_template.sFirst,
-                        "sLast": js_lang_mail_template.sLast,
-                        "sPrevious": js_lang_mail_template.sPrevious,
-                        "sNext": js_lang_mail_template.sNext
+                        "sFirst": js_lang_template.sFirst,
+                        "sLast": js_lang_template.sLast,
+                        "sPrevious": js_lang_template.sPrevious,
+                        "sNext": js_lang_template.sNext,
                     },
-                    "sInfo": js_lang_mail_template.sInfo,
-                    "sZeroRecords": js_lang_mail_template.sZeroRecords,
-                    "sEmptyTable": js_lang_mail_template.sEmptyTable,
-                    "sInfoEmpty": js_lang_mail_template.sInfoEmpty,
-                    "sInfoFiltered": js_lang_mail_template.sInfoFiltered
+                    "sInfo": js_lang_template.sInfo,
+                    "sZeroRecords": js_lang_template.sZeroRecords,
+                    "sEmptyTable": js_lang_template.sEmptyTable,
+                    "sInfoEmpty": js_lang_template.sInfoEmpty,
+                    "sInfoFiltered": js_lang_template.sInfoFiltered,
                 },
                 "aoColumns": [
                     {
@@ -45,22 +45,56 @@
                 },
             });
         },
+ 
     };
-    
+
     app.mail_template_info = {
         init: function () {
-            app.mail_template_info.change_editor();
-            app.mail_template_info.validate_mail();
+            this.ajax_event();
+            this.submit_info();
         },
- 
-        change_editor: function () {
-            $('[data-toggle="change_editor"]').on('click', function () {
-                url = $(this).attr('data-url');
-                ecjia.pjax(url);
-            });
+
+        ajax_event :function(){
+            $("#template_code").change(function () {
+                var subject_text = $("#template_code option:selected").text();
+                var subject_val = $("#template_code option:selected").val();
+                subject = subject_text.replace('['+ subject_val + ']',"");
+
+                if (subject_val != 0){
+                     $('#subject').val(subject);
+                     var url = $("#data-href").val();
+                     var filters = {
+                         'JSON': {
+                             'code': subject_val,
+                             'channel_code': $("#channel_code").val(),
+                         }
+                     };
+                     $.post(url, filters, function (data) {
+                         this.ajax_event_data(data);
+                     }, "JSON");
+                } else {
+                     $('#subject').val('');
+                     $('#content').val('');
+                     $('.help-block').text('')
+                }
+            })
         },
- 
-        validate_mail: function () {
+
+        ajax_event_data :function(data){
+            $('#content').val(data.template);
+            $('.help-block').html('');
+            if (data.content.length > 0) {
+                var opt = '<span class="help-block">';
+                for (var i = 0; i < data.content.length; i++) {
+                    opt +=data.content[i] + '<br>';
+                };
+                opt += '</span>';
+                $('.help-block').append(opt);
+            }
+
+        },
+
+        submit_info: function () {
             var option = {
                 rules: {
                     subject: {
@@ -72,16 +106,14 @@
                 },
                 messages: {
                     subject: {
-                        required: js_lang_mail_template.subject_required
+                        required: js_lang_template.subject_no_empty
                     },
                     content: {
-                        required: js_lang_mail_template.content_required
+                        required: js_lang_template.content_no_empty
                     }
                 },
                 submitHandler: function () {
-                    $("form[name='theForm']").bind('form-pre-serialize', function (event, form, options, veto) {
-                        (typeof (tinyMCE) != "undefined") && tinyMCE.triggerSave();
-                    }).ajaxSubmit({
+                    $("form[name='theForm']").ajaxSubmit({
                         dataType: "json",
                         success: function (data) {
                             ecjia.admin.showmessage(data);

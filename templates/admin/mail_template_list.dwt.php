@@ -3,19 +3,11 @@
 
 <!-- {block name="footer"} -->
 <script type="text/javascript">
-	ecjia.admin.push_template_list.init();
+	ecjia.admin.mail_template_list.init();
 </script>
 <!-- {/block} -->
 
 <!-- {block name="main_content"} -->
-
-<!-- {if !$data} -->
-<!-- <div class="alert alert-error"> -->
-<!-- 	<a class="close" data-dismiss="alert">×</a> -->
-<!-- 	<strong>温馨提示：</strong>请您先前往 "控制面板" -> "插件管理" 中安装推送消息渠道。 -->
-<!-- </div> -->
-<!-- {/if} -->
-
 <div class="row-fluid">
 	<div class="span12">
 		<h3 class="heading">
