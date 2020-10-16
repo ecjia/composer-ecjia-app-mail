@@ -55,17 +55,30 @@ return array(
 
     'mail_template_page' => array(
         'save_confirm'     => __('您已经修改了模板内容，您确定不保存么？', 'mail'),
-        'sFirst'           => __('首页', 'mail'),
-        'sLast'            => __('尾页', 'mail'),
-        'sPrevious'        => __('上一页', 'mail'),
-        'sNext'            => __('下一页', 'mail'),
-        'sInfo'            => __('共_TOTAL_条记录 第_START_条到第_END_条', 'mail'),
-        'sZeroRecords'     => __('没有找到任何记录', 'mail'),
-        'sEmptyTable'      => __('没有找到任何记录', 'mail'),
-        'sInfoEmpty'       => __('共0条记录', 'mail'),
-        'sInfoFiltered'    => __('（从_MAX_条数据中检索）', 'mail'),
+
         'subject_required' => __('邮件主题不能为空！', 'mail'),
         'content_required' => __('模板内容不能为空！', 'mail'),
+
+        //列表
+        'sFirst'	       	=> __('首页', 'mail'),
+        'sLast' 		   	=> __('尾页', 'mail'),
+        'sPrevious'		   	=> __('上一页', 'mail'),
+        'sNext'				=> __('下一页', 'mail'),
+        'sInfo'				=> __('共_TOTAL_条记录 第_START_条到第_END_条', 'mail'),
+        'sZeroRecords' 		=> __('没有找到任何记录', 'mail'),
+        'sEmptyTable' 		=> __('没有找到任何记录', 'mail'),
+        'sInfoEmpty'		=> __('共0条记录', 'mail'),
+        'sInfoFiltered'		=> __('（从_MAX_条数据中检索）', 'mail'),
+
+        //测试
+        'no_search_user'	 => __('未搜索到会员信息', 'push'),
+        'no_search_mer_user' => __('未搜索到商家会员信息', 'push'),
+        'no_search_admin'	 => __('未搜索到管理员信息', 'push'),
+        'pls_tel'  => __('请输入手机号', 'push'),
+
+        //添加编辑消息模板
+        'subject_no_empty' => __('消息主题不能为空！', 'push'),
+        'content_no_empty' => __('模板内容不能为空！', 'push'),
     ),
 
     'view_sendlist_page' => array(
@@ -99,7 +112,7 @@ return array(
         'channel_desc_minlength' => __('描述长度不能小于6', 'mail'),
     ],
 
-    'mail_events' => [
+    'mail_events_page' => [
         'ok'     => __('确定', 'mail'),
         'cancel' => __('取消', 'mail'),
     ],

@@ -58,16 +58,14 @@
             $("#template_code").change(function () {
                 var subject_text = $("#template_code option:selected").text();
                 var subject_val = $("#template_code option:selected").val();
-                subject = subject_text.replace('['+ subject_val + ']',"");
+                subject = subject_text.replace('['+ subject_val + ']', "");
 
-                if (subject_val != 0){
+                if (subject_val !== 0){
                      $('#subject').val(subject);
                      var url = $("#data-href").val();
                      var filters = {
-                         'JSON': {
-                             'code': subject_val,
-                             'channel_code': $("#channel_code").val(),
-                         }
+                         'code': subject_val,
+                         'channel_code': $("#channel_code").val(),
                      };
                      $.post(url, filters, function (data) {
                          this.ajax_event_data(data);

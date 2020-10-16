@@ -78,7 +78,6 @@ class AdminTemplateController extends AdminBase
 		parent::__construct();
 		
 		
-		RC_Script::enqueue_script('tinymce');
 		RC_Style::enqueue_style('chosen');
 		RC_Style::enqueue_style('uniform-aristo');
 		RC_Script::enqueue_script('jquery-chosen');
@@ -95,13 +94,13 @@ class AdminTemplateController extends AdminBase
 		RC_Script::enqueue_script('bootstrap-placeholder');
 		RC_Script::enqueue_script('jquery-dataTables-bootstrap');
 
-		RC_Script::enqueue_script('push_template', RC_App::apps_url('statics/js/push_template.js', $this->__FILE__), array(), false, false);
-		RC_Script::localize_script('push_template', 'js_lang_template', config('app-push::jslang.push_template_page'));
+		RC_Script::enqueue_script('push_template', RC_App::apps_url('statics/js/mail_template.js', $this->__FILE__), array(), false, false);
+		RC_Script::localize_script('push_template', 'js_lang_mail_template', config('app-mail::jslang.mail_template_page'));
 
-		RC_Script::enqueue_script('push_events', RC_App::apps_url('statics/js/push_events.js', $this->__FILE__), array(), false, false);
-		RC_Script::localize_script('push_events', 'js_lang_events', config('app-push::jslang.push_events_page'));
+		RC_Script::enqueue_script('push_events', RC_App::apps_url('statics/js/mail_events.js', $this->__FILE__), array(), false, false);
+		RC_Script::localize_script('push_events', 'js_lang_mail_events', config('app-mail::jslang.mail_events_page'));
 	
-		ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('消息模板', 'push'), RC_Uri::url('push/admin_template/init')));
+		ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('邮件模板', 'mail'), RC_Uri::url('mail/admin_template/init')));
 	}
 	
 	/**
@@ -171,20 +170,21 @@ class AdminTemplateController extends AdminBase
 	
 	public function ajax_event()
     {
+        $this->admin_priv('mail_template_update');
 
-	    $filter = $_POST['JSON'];
-	    $code = trim($filter['code']);
-	    $channel_code = trim($filter['channel_code']);
+	    $code = trim($_POST['code']);
+	    $channel_code = trim($_POST['channel_code']);
 	    $event = with(new EventFactory)->event($code);
 
 	    $desc = [];
 	    $getValueHit = $event->getValueHit();
 	    if (!empty($getValueHit)) {
-	    	$desc[] = sprintf(__('可用变量：%s', 'push'), $getValueHit);
+	    	$desc[] = sprintf(__('可用变量：%s', 'mail'), $getValueHit);
 	    }
-	    $desc[] = __('变量使用说明：变量不限位置摆放，可自由摆放，但变量不可自定义名称，需保持与以上名称一致。', 'push');
+	    $desc[] = __('变量使用说明：变量不限位置摆放，可自由摆放，但变量不可自定义名称，需保持与以上名称一致。', 'mail');
 	    	    
 	    $template = $event->getTemplate();
+
 	    return $this->showmessage('', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('content' => $desc, 'template' => $template));
 	}
 	
