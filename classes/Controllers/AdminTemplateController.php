@@ -109,16 +109,16 @@ class AdminTemplateController extends AdminBase
 		$this->admin_priv('mail_template_manage');
 		
 		ecjia_screen::get_current_screen()->remove_last_nav_here();
-		ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('消息模板', 'mail')));
+		ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('邮件模板', 'mail')));
 
 		$action_links = (new ActionLinkGroup())->addLink(
                             new ActionLink(RC_Uri::url('mail/admin_events/init'), __('邮件事件列表', 'mail'), 'fontello-icon-reply')
                         )->addLink(
-                            new ActionLink(RC_Uri::url('mail/admin_template/add'), __('添加消息模板', 'mail'), 'fontello-icon-plus')
+                            new ActionLink(RC_Uri::url('mail/admin_template/add'), __('添加邮件模板', 'mail'), 'fontello-icon-plus')
                         );
 		$render = (new ActionLinkRender($action_links))->render();
 
-		$this->assign('ur_here', __('消息模板', 'push'));
+		$this->assign('ur_here', __('邮件模板', 'push'));
 		$this->assign('action_links', $render);
 
 		$template = MailTemplateModel::mail()->select('id', 'template_code', 'template_subject', 'template_content')
@@ -140,7 +140,7 @@ class AdminTemplateController extends AdminBase
 
 		ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('消息模板', 'push')));
 	
-		$this->assign('ur_here', __('添加消息模板', 'push'));
+		$this->assign('ur_here', __('添加邮件模板', 'push'));
 		$this->assign('action_link', array('href'=>RC_Uri::url('push/admin_template/init',array('channel_code' => $_GET['channel_code'])), 'text' => __('消息模板列表', 'push')));
 		
 		$template_code_list = $this->template_code_list();
