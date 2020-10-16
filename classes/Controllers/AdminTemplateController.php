@@ -288,7 +288,7 @@ class AdminTemplateController extends AdminBase
 	 */
 	public function update()
     {
-		$this->admin_priv('push_template_update');
+		$this->admin_priv('mail_template_update');
 		
 		$id = intval($_POST['id']);
 		$template_code = $_POST['template_code'];
@@ -297,105 +297,25 @@ class AdminTemplateController extends AdminBase
 		$channel_code  = $_POST['channel_code'];
 	
 		if (empty($template_code)) {
-			return $this->showmessage(__('请选择消息事件', 'push'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+			return $this->showmessage(__('请选择邮件事件', 'mail'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 		}
 		
-		$query = RC_DB::connection('ecjia')->table('notification_templates')->where('channel_type', 'push')->where('channel_code', $channel_code)->where('template_code', $template_code)->where('id', '!=', $id)->count();
+		$query = MailTemplateModel::mail()->where('template_code', $template_code)->where('id', '!=', $id)->count();
     	if ($query > 0) {
-    		return $this->showmessage(__('该消息模板代号在该渠道下已存在', 'push'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+    		return $this->showmessage(__('该消息邮件代号在该渠道下已存在', 'mail'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
     	}
+
 		$data = array(
 			'template_code'    => $template_code,
 			'template_subject' => $subject,
 			'template_content' => $content,
 			'last_modify'      => RC_Time::gmtime(),
 		);
-		RC_DB::connection('ecjia')->table('notification_templates')->where('id', $id)->update($data);
+		MailTemplateModel::mail()->where('id', $id)->update($data);
 		
-		ecjia_admin::admin_log($subject, 'edit', 'push_template');
-	  	return $this->showmessage(__('编辑消息模板成功', 'push'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS,array('pjaxurl' => RC_Uri::url('push/admin_template/edit', array('id' => $id, 'channel_code' => $channel_code, 'event_code' => $template_code))));
-	}
-	
-	/**
-	 * 测试消息模板
-	 */
-	public function test()
-    {
-		$this->admin_priv('mail_template_update');
-		
-		$this->assign('ur_here', __('测试消息模板', 'push'));
-		$this->assign('action_link', array('href' => RC_Uri::url('push/admin_template/init',array('channel_code'=>$_GET['channel_code'])), 'text' => __('消息模板列表', 'push')));
-		
-		//判断渠道
-		$channel_code = trim($_GET['channel_code']);
-		$this->assign('channel_code', $channel_code);
+		ecjia_admin::admin_log($subject, 'edit', 'mail_template');
 
-		$id = intval($_GET['id']);
-		$data = RC_DB::connection('ecjia')->table('notification_templates')->where('id', $id)->first();
-		
-		$template_content = $data['template_content'];
-		preg_match_all ("|{(.*)}|U", $template_content, $ok);
-		$variable =$ok[1];
-		$this->assign('variable', $variable);
-		$this->assign('data', $data);
-
-		$this->assign('form_action', RC_Uri::url('push/admin_template/test_request'));
-
-        return $this->display('push_template_test.dwt');
-			
-	}
-	
-	public function test_request()
-    {
-		$this->admin_priv('push_template_update');
-		$data = $_POST['data'];
-		foreach ($data as $row) {
-			if (empty($row)) {
-				return $this->showmessage(__('模板变量不能为空', 'push'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
-			}
-		}
-
-		$admin_id  = intval($_POST['admin_id']);
-		$uid       = intval($_POST['user_id']);
-		$merchant_user_id = intval($_POST['merchant_user_id']);
-		if (!empty($admin_id)) {
-			$user_id = $admin_id;
-		} elseif (!empty($uid)) {
-			$user_id = $uid;
-		} elseif (!empty($merchant_user_id)) {
-			$user_id = $merchant_user_id;
-		} else{
-			return $this->showmessage(__('请选择推送对象', 'push'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
-		}
-		$options = array(
-			'user_id'   => $user_id,
-			'user_type' => $_POST['target'],
-			'event'     => $_POST['template_code'],
-			'value' 	=> empty($data) ? [] : $data,
-			'field' 	=> array(),
-		);
-
-		$response  = RC_Api::api('push', 'push_event_send', $options);
-		if (is_ecjia_error($response)) {
-			return $this->showmessage($response->get_error_message(), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
-		}
-
-        $result = $response->map(function ($item) {
-
-            if (is_ecjia_error($item['result'])) {
-                $errormsg = '失败，' . $item['result']->get_error_message();
-            } else {
-                $errormsg = '成功';
-            }
-
-            $device = $item['device']->device_name . ' ' . $item['device']->device_type . ' ' . $item['device']->device_os;
-            return sprintf("给%s设备%s推送消息%s", $device, $item['device']->device_client, $errormsg);
-        })->implode('<br />');
-
-		$showmessage = __(sprintf("消息模板已经推送，结果如下：<br /> %s", $result), 'push');
-
-        return $this->showmessage($showmessage, ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
-
+	  	return $this->showmessage(__('编辑邮件模板成功', 'mail'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS,array('pjaxurl' => RC_Uri::url('mail/admin_template/edit', array('id' => $id, 'event_code' => $template_code))));
 	}
 
 	/**
@@ -403,33 +323,18 @@ class AdminTemplateController extends AdminBase
 	 */
 	public function remove()
     {
-		$this->admin_priv('push_template_delete');
+		$this->admin_priv('mail_template_delete');
 	
 		$id = intval($_GET['id']);
 
-		$info = RC_DB::connection('ecjia')->table('notification_templates')->where('id', $id)->select('template_subject')->first();
-		RC_DB::connection('ecjia')->table('notification_templates')->where('id', $id)->delete();
+		$info = MailTemplateModel::mail()->where('id', $id)->select('template_subject')->first();
+		MailTemplateModel::mail()->where('id', $id)->delete();
 		 
-		ecjia_admin::admin_log($info['template_subject'], 'remove', 'push_template');
-		return $this->showmessage(__('删除消息模板成功', 'push'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('push/admin_template/init', array('id' => $id, 'channel_code'=>$_GET['channel_code']))));
+		ecjia_admin::admin_log($info['template_subject'], 'remove', 'mail_template');
+
+		return $this->showmessage(__('删除消息模板成功', 'push'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('mail/admin_template/init')));
 	}
-	
-	/**
-	 * 获取模板code
-	 */
-	private function template_code_list()
-    {
-		
-		$template_code_list = array();
-		
-		$factory = new \Ecjia\App\Push\EventFactory\EventFactory();
-		
-		$events = $factory->getEvents();
-		foreach ($events as $event) {
-		    $template_code_list[$event->getCode()] = $event->getName() . ' [' . $event->getCode() . ']';
-		}
-		return $template_code_list;
-	}
+
 }
 
 //end

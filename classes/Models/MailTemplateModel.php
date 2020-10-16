@@ -54,6 +54,13 @@ class MailTemplateModel extends Model
 	protected $connection = 'ecjia';
 	
     protected $table = 'notification_templates';
+
+    /**
+     * 该模型是否被自动维护时间戳
+     *
+     * @var bool
+     */
+    public $timestamps = false;
     
     
     /**

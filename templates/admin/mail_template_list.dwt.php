@@ -28,11 +28,13 @@
 					 <td class="hide-edit-area hide_edit_area_bottom">{$list.template_code}
 						<div class="edit-list">
 						 <a class="data-pjax no-underline" href='{url path="mail/admin_template/edit" args="id={$list.id}&event_code={$list.template_code}"}' title='{t domain="mail"}编辑{/t}'>{t domain="mail"}编辑{/t}</a>&nbsp;|&nbsp;
-		                 <a class="ajaxremove ecjiafc-red" data-toggle="ajaxremove" data-msg='{t domain="mail"}您确定要删除该消息模板吗？{/t}' href='{RC_Uri::url("mail/admin_template/remove", "id={$list.id}")}' title='{t domain="mail"}删除{/t}'>{t domain="mail"}删除{/t}</a>
+		                 <a class="ajaxremove ecjiafc-red" data-toggle="ajaxremove" data-msg='{t domain="mail"}您确定要删除该邮件模板吗？{/t}' href='{RC_Uri::url("mail/admin_template/remove", "id={$list.id}")}' title='{t domain="mail"}删除{/t}'>{t domain="mail"}删除{/t}</a>
 						</div>
 					 </td>
 					<td>{$list.template_subject}</td>
 				</tr>
+                <!-- {foreachelse} -->
+                <tr><td class="no-records" colspan="2">{t domain="mail"}没有找到任何记录{/t}</td></tr>
 				<!-- {/foreach} -->
 			</tbody>
 		</table>
