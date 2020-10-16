@@ -86,7 +86,7 @@ class AdminEventsController extends AdminBase
         RC_Script::enqueue_script('jquery-dataTables-bootstrap');
 
         RC_Script::enqueue_script('mail_events', RC_App::apps_url('statics/js/mail_events.js', $this->__FILE__), array(), false, false);
-        RC_Script::localize_script('mail_events', 'js_lang_sms_events', config('app-mail::jslang.mail_events'));
+        RC_Script::localize_script('mail_events', 'js_lang_mail_events', config('app-mail::jslang.mail_events'));
 
     }
 
