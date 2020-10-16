@@ -47,8 +47,11 @@
 namespace Ecjia\App\Mail\Controllers;
 
 use admin_nav_here;
+use admin_notice;
 use ecjia;
 use Ecjia\App\Mail\EventFactory\EventFactory;
+use Ecjia\App\Mail\Lists\TemplateCodeAvailableOptions;
+use Ecjia\App\Mail\Lists\TemplateCodeList;
 use Ecjia\App\Mail\Models\MailTemplateModel;
 use Ecjia\Component\ActionLink\ActionLink;
 use Ecjia\Component\ActionLink\ActionLinkGroup;
@@ -138,27 +141,29 @@ class AdminTemplateController extends AdminBase
     {
 		$this->admin_priv('mail_template_update');
 
-		ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('消息模板', 'push')));
+		ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('邮件模板', 'mail')));
+
+		$channel_code = $this->request->input('channel_code');
+
+        $action_links = (new ActionLinkGroup())->addLink(
+            new ActionLink(RC_Uri::url('mail/admin_template/init'), __('邮件模板列表', 'mail'), 'fontello-icon-reply')
+        );
+        $render = (new ActionLinkRender($action_links))->render();
 	
-		$this->assign('ur_here', __('添加邮件模板', 'push'));
-		$this->assign('action_link', array('href'=>RC_Uri::url('push/admin_template/init',array('channel_code' => $_GET['channel_code'])), 'text' => __('消息模板列表', 'push')));
+		$this->assign('ur_here', __('添加邮件模板', 'mail'));
+		$this->assign('action_links', $render);
 		
-		$template_code_list = $this->template_code_list();
-		$existed = RC_DB::connection('ecjia')->table('notification_templates')->where('channel_code', $_GET['channel_code'])->select('template_code','template_subject')->get();
-		if (!empty($existed)) {
-			foreach ($existed as $value) {
-				$existed_list[$value['template_code']] = $value['template_subject']. ' [' .  $value['template_code'] . ']';
-			}
-			$res = array_diff($template_code_list,$existed_list);
-			unset($template_code_list);
-			$template_code_list = $res;
-		}
+		$template_code_list = (new TemplateCodeAvailableOptions())();
+
+		if (empty($template_code_list)) {
+            ecjia_screen::get_current_screen()->add_admin_notice(new admin_notice(__('<strong>温馨提示：</strong>暂时没有邮件模板可添加。', 'mail')));
+        }
+
 		$this->assign('template_code_list', $template_code_list);
 		
-		$channel_code = trim($_GET['channel_code']);
 		$this->assign('channel_code', $channel_code);
 	
-		$this->assign('form_action', RC_Uri::url('push/admin_template/insert'));
+		$this->assign('form_action', RC_Uri::url('mail/admin_template/insert'));
 		$this->assign('action', 'insert');
 
         return $this->display('mail_template_info.dwt');
