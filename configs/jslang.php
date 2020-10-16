@@ -97,7 +97,12 @@ return array(
         'channel_name_required'  => __('请输入短信渠道名称', 'mail'),
         'channel_desc_required'  => __('请输入描述', 'mail'),
         'channel_desc_minlength' => __('描述长度不能小于6', 'mail'),
-    ]
+    ],
+
+    'mail_events' => [
+        'ok'     => __('确定', 'mail'),
+        'cancel' => __('取消', 'mail'),
+    ],
 
 
 );

@@ -12,7 +12,7 @@ class ComponentNamespace extends \Ecjia\Component\ComponentFactory\ComponentName
      */
     protected function getDefaultDir()
     {
-        return royalcms()->resourcePath('components/PushEvents');
+        return royalcms()->resourcePath('components/MailEvents');
     }
 
     /**
@@ -20,7 +20,7 @@ class ComponentNamespace extends \Ecjia\Component\ComponentFactory\ComponentName
      */
     protected function getDefaultNamespace()
     {
-        return 'Ecjia\Resources\Components\PushEvents';
+        return 'Ecjia\Resources\Components\MailEvents';
     }
 
 }
