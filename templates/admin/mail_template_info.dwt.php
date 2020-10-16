@@ -3,11 +3,18 @@
 
 <!-- {block name="footer"} -->
 <script type="text/javascript">
-	ecjia.admin.mail_template_info.init();
+	ecjia.admin.push_template_info.init();
 </script>
 <!-- {/block} -->
 
 <!-- {block name="main_content"} -->
+{if !$template_code_list}
+<div class="alert">
+	<a class="close" data-dismiss="alert">×</a>
+	{t domain="push"}<strong>温馨提示：</strong>暂时未有消息模板可添加。{/t}
+</div>
+{/if}
+
 <div>
 	<h3 class="heading">
 		<!-- {if $ur_here}{$ur_here}{/if} -->
@@ -19,43 +26,52 @@
 
 <div class="row-fluid edit-page" id="conent_area">
 	<div class="span12">
-		<form id="form-privilege" class="form-horizontal" name="theForm"  method="post" action="{url path='mail/admin/save_template'}">
+		<form id="form-privilege" class="form-horizontal" name="theForm"  method="post" action="{$form_action}">
 			<fieldset>
 				<div class="control-group formSep">
-					<label class="control-label">{t domain="mail"}邮件模板：{/t}</label>
-					<div class="controls users">
-						<p>{$template.template_name}</p>
-					</div>
-				</div>
-				<div class="control-group formSep">
-					<label class="control-label">{t domain="mail"}邮件主题：{/t}</label>
+					<label class="control-label">{t domain="push"}消息事件：{/t}</label>
 					<div class="controls">
-						<input type="text" name="subject" id="subject" value="{$template.template_subject}" class="span4"/>
-						<span class="input-must"><span class="require-field" style="color:#FF0000,">*</span></span>
+						<select name="template_code" class="span6" id="template_code">
+	                        <option value='0'>{t domain="push"}请选择{/t}</option>
+	        				<!-- {html_options options=$template_code_list selected=$data.template_code} -->
+						</select>
 					</div>
 				</div>
+								
 				<div class="control-group formSep">
-					<label class="control-label">{t domain="mail"}邮件类型：{/t}</label>
-					<div class="controls chk_radio">
-						<input type="radio" class="uni_style" name="mail_type" value="0" {if $template.is_html eq '0'}checked="true"{/if} data-toggle="change_editor" data-url='{url path="mail/admin/loat_template" args="mail_type=0&tpl={$tpl}"}' />{t domain="mail"}纯文本邮件{/t}
-						<input type="radio" class="uni_style" name="mail_type" value="1" {if $template.is_html eq '1'}checked="true"{/if} data-toggle="change_editor" data-url='{url path="mail/admin/loat_template" args="mail_type=1&tpl={$tpl}"}' />{t domain="mail"}HTML 邮件{/t}
+					<label class="control-label">{t domain="push"}消息主题：{/t}</label>
+					<div class="controls">
+						<input type="text" name="subject" id="subject" value="{$data.template_subject}" class="span6"/>
+						<span class="input-must">*</span>
 					</div>
 				</div>
+				
+				<div class="control-group formSep">
+					<label class="control-label">{t domain="push"}模板内容：{/t}</label>
+					<div class="controls">
+						<textarea class="span6 h200" name="content" id="content" >{$data.template_content}</textarea>
+						<span class="input-must">*</span>
+						<span class="help-block">
+							{if $desc}
+								<!-- {foreach from=$desc item=list} -->
+									{$list}<br>
+								<!-- {/foreach} -->
+							{/if}
+						
+						</span>
+					</div>
+				</div>
+
 				<div class="control-group">
-					<label class="control-label">{t domain="mail"}模板内容：{/t}</label>
 					<div class="controls">
-						{if $template.is_html eq '1'}
-							{ecjia:editor content=$template.template_content}
+						<input type="hidden" value="{$data.id}" name="id"/>
+						<input type="hidden" value="{url path='push/admin_template/ajax_event'}" id="data-href"/>
+						<input type="hidden" value="{$channel_code}" name="channel_code" id="channel_code"/>
+						{if $action eq "insert"}
+						<button class="btn btn-gebo" type="submit">{t domain="push"}确定{/t}</button>
 						{else}
-							<textarea name="content" id="content" rows="16" >{$template.template_content}</textarea>
-							<span class="input-must"><span class="require-field" style="color:#FF0000,">*</span></span>
+						<button class="btn btn-gebo" type="submit">{t domain="push"}更新{/t}</button>
 						{/if}
-					</div>
-				</div>
-				<div class="control-group">
-					<div class="controls">
-						<button class="btn btn-gebo" type="submit">{t domain="mail"}更新{/t}</button>
-						<input type="hidden" name="tpl" value="{$tpl}" />
 					</div>
 				</div>
 			</fieldset>

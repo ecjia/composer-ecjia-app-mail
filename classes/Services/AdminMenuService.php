@@ -23,7 +23,7 @@ class AdminMenuService
             ecjia_admin::make_admin_menu('email_list', __('邮件订阅管理', 'mail'), RC_Uri::url('mail/admin_email_list/init'), 2)->add_purview('email_list_manage'),
             ecjia_admin::make_admin_menu('view_sendlist', __('邮件队列管理', 'mail'), RC_Uri::url('mail/admin_view_sendlist/init'), 4)->add_purview('email_sendlist_manage'),
             ecjia_admin::make_admin_menu('divider', '', '', 10)->add_purview('mail_template_manage'),
-            ecjia_admin::make_admin_menu('mail_template', __('邮件模板', 'mail'), RC_Uri::url('mail/admin/init'), 11)->add_purview('mail_template_manage'),
+            ecjia_admin::make_admin_menu('mail_template', __('邮件模板', 'mail'), RC_Uri::url('mail/admin_template/init'), 11)->add_purview('mail_template_manage'),
             ecjia_admin::make_admin_menu('mail_event', __('邮件事件', 'mail'), RC_Uri::url('mail/admin_events/init'), 13)->add_purview('mail_events_manage'),
         );
 
