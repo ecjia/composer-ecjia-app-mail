@@ -27,7 +27,12 @@
                          'channel_code': $("#channel_code").val(),
                      };
                      $.post(url, filters, function (data) {
-                         app.mail_template_info.ajax_event_data(data);
+                         $('#content').val(data.template);
+                         $('.help-block').html(data.content);
+                         //设置编辑器的内容
+                         if (editor_content !== undefined) {
+                             editor_content.setContent(data.template);
+                         }
                      }, "JSON");
                 } else {
                      $('#subject').val('');
@@ -35,11 +40,6 @@
                      $('.help-block').text('')
                 }
             })
-        },
-
-        ajax_event_data :function(data){
-            $('#content').val(data.template);
-            $('.help-block').html(data.content);
         },
 
         submit_info: function () {

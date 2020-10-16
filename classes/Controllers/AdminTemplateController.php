@@ -58,6 +58,7 @@ use Ecjia\Component\ActionLink\ActionLinkGroup;
 use Ecjia\Component\ActionLink\ActionLinkRender;
 use ecjia_admin;
 use ecjia_screen;
+use Illuminate\Support\Facades\Mail;
 use RC_Api;
 use RC_App;
 use RC_DB;
@@ -206,12 +207,12 @@ class AdminTemplateController extends AdminBase
 		$channel_code  = $_POST['channel_code'];
 		
 		if (empty($template_code)) {
-			return $this->showmessage(__('请选择消息事件', 'push'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+			return $this->showmessage(__('请选择消息事件', 'mail'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 		}
 		
-		$query = RC_DB::connection('ecjia')->table('notification_templates')->where('channel_type', 'push')->where('channel_code', $channel_code)->where('template_code', $template_code)->count();
+		$query = MailTemplateModel::mail()->where('template_code', $template_code)->count();
 		if ($query > 0) {
-			return $this->showmessage(__('该消息模板代号在该渠道下已存在', 'push'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+			return $this->showmessage(__('该邮件模板代号在该渠道下已存在', 'mail'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 		}
 		
 		$data = array(
@@ -220,13 +221,14 @@ class AdminTemplateController extends AdminBase
 			'template_content' => $content,
 			'content_type'	   => 'text',
 			'last_modify'      => RC_Time::gmtime(),
-			'channel_type'     => 'push',
+			'channel_type'     => 'mail',
 			'channel_code'	   => $channel_code,
 		);
-		$id = RC_DB::connection('ecjia')->table('notification_templates')->insertGetId($data);
+		$id = MailTemplateModel::insertGetId($data);
 		
-		ecjia_admin::admin_log($subject, 'add', 'push_template');
-		return $this->showmessage(__('添加消息模板成功', 'push'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('push/admin_template/edit', array('id' => $id, 'channel_code' => $channel_code, 'event_code' => $template_code))));
+		ecjia_admin::admin_log($subject, 'add', 'mail_template');
+
+		return $this->showmessage(__('添加邮件模板成功', 'mail'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('mail/admin_template/edit', array('id' => $id, 'event_code' => $template_code))));
 	}
 	
 	/**
@@ -236,13 +238,13 @@ class AdminTemplateController extends AdminBase
     {
 		$this->admin_priv('mail_template_update');
 
-		ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('消息模板', 'push')));
+		ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('邮件模板', 'mail')));
 		
-		$this->assign('ur_here', __('编辑消息模板', 'push'));
-		$this->assign('action_link', array('href' => RC_Uri::url('push/admin_template/init',array('channel_code'=>$_GET['channel_code'])), 'text' => __('消息模板列表', 'push')));
+		$this->assign('ur_here', __('编辑邮件模板', 'mail'));
+		$this->assign('action_link', array('href' => RC_Uri::url('push/admin_template/init'), 'text' => __('邮件模板列表', 'push')));
 	
 		$template_code_list = $this->template_code_list();
-		$existed = RC_DB::connection('ecjia')->table('notification_templates')->where('channel_code', $_GET['channel_code'])->where('template_code', '!=', $_GET['event_code'])->select('template_code','template_subject')->get();
+		$existed = RC_DB::connection('ecjia')->table('notification_templates')->where('channel_code', $_GET['channel_code'])->where('template_code', '!=', $_GET['event_code'])->select('template_code', 'template_subject')->get();
 		if (!empty($existed)) {
 			foreach ($existed as $value) {
 				$existed_list[$value['template_code']] = $value['template_subject']. ' [' .  $value['template_code'] . ']';
