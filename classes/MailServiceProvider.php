@@ -30,6 +30,7 @@ class MailServiceProvider extends  AppParentServiceProvider
         RC_Service::addService('plugin_menu', 'mail', 'Ecjia\App\Mail\Services\PluginMenuService');
         RC_Service::addService('plugin_install', 'mail', 'Ecjia\App\Mail\Services\PluginInstallService');
         RC_Service::addService('plugin_uninstall', 'mail', 'Ecjia\App\Mail\Services\PluginUninstallService');
+        RC_Service::addService('send_event_mail', 'mail', 'Ecjia\App\Mail\Services\SendEventMailService');
     }
 
     /**
