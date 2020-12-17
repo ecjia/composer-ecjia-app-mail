@@ -324,7 +324,7 @@ class AdminPluginController extends AdminBase
         $channel_info = RC_DB::connection(config('cashier.database_connection', 'default'))->table('notification_channels')->where('channel_id', $channel_id)->first();
 
         ecjia_admin::admin_log( sprintf(__("%s，排序值为%s", 'mail'), stripcslashes($channel_info['channel_name']), $channel_sort), 'edit', 'mail_channel_sort');
-        return $this->showmessage(__('编辑成功', 'sms'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('sms/admin_plugin/init')));
+        return $this->showmessage(__('编辑成功', 'mail'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('mail/admin_plugin/init')));
     }
 
     /**
