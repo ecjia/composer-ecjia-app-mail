@@ -63,7 +63,7 @@ class MailManager extends RC_Object
     protected $model;
 
     /**
-     * @var string
+     * @var EventAbstract
      */
     protected $event;
 
