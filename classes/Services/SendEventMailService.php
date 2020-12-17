@@ -47,6 +47,8 @@
 namespace Ecjia\App\Mail\Services;
 
 use Ecjia\App\Mail\EventFactory\EventFactory;
+use Ecjia\App\Mail\MailManager;
+use Ecjia\App\Mail\Models\MailTemplateModel;
 use ecjia_error;
 
 /**
@@ -65,8 +67,7 @@ class SendEventMailService
      */
     public function handle(& $options)
     {
-        // $mobile, $event, $value
-
+        // $email, $event, $value, $channel
         if (!array_key_exists('email', $options) || !array_key_exists('event', $options) || !array_key_exists('value', $options)) {
             return new ecjia_error('invalid_parameter', sprintf(__('请求接口%s参数无效', 'mail'), __CLASS__));
         }
@@ -83,11 +84,10 @@ class SendEventMailService
         }
 
         $result = MailManager::make()
-            ->setTemplateModel(new \Ecjia\App\Sms\Models\SmsTemplateModel())
+            ->setTemplateModel(new MailTemplateModel())
             ->setEvent($eventHandler)
             ->setChannel($channel)
-            ->setAreaCode($area_code)
-            ->send($mobile, $value);
+            ->send($email, $value);
 
         return $result;
     }

@@ -96,11 +96,12 @@ class MailManager extends RC_Object
     {
         return $this->channel;
     }
-    
+
     /** 发送短消息
      *
-     * @param   string  $email         要发送到邮箱地址，传的值是一个正常的邮箱地址
-     * @param   string  $template_var    短信模板变量，数组格式
+     * @param string $email 要发送到邮箱地址，传的值是一个正常的邮箱地址
+     * @param array $template_var 短信模板变量，数组格式
+     * @return array|bool|ecjia_error|null
      */
     public function send($email, array $template_var)
     {
@@ -165,11 +166,11 @@ class MailManager extends RC_Object
      * @param string $content
      * @param array $template_var
      */
-    protected function matchTemplateVar($content, $template_var)
+    protected function matchTemplateVar($content, array $template_var)
     {
-        $matchs = [];
-        preg_match_all('|\${(.*)}|U', $content, $matchs);
-        $variable = $matchs[1];
+        $match = [];
+        preg_match_all('|\${(.*)}|U', $content, $match);
+        $variable = $match[1];
         foreach ($template_var as $key => $var) {
             if (!in_array($key, $variable)) unset($template_var[$key]);
         }
