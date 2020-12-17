@@ -46,6 +46,7 @@
 //
 namespace Ecjia\App\Mail;
 
+use Ecjia\App\Mail\Mailable\MailableAbstract;
 use Ecjia\Component\Plugin\AbstractPlugin;
 
 /**
@@ -54,92 +55,27 @@ use Ecjia\Component\Plugin\AbstractPlugin;
  */
 abstract class MailAbstract extends AbstractPlugin
 {
-
     /**
-     * 模板内容
-     * @var string
+     * @var MailableAbstract $content
      */
     protected $content;
 
     /**
-     * 厂商模板ID
-     * @var string
+     * @return MailableAbstract
      */
-    protected $templateId;
-
-    /**
-     * 厂商模板变量，数组格式
-     * @var array
-     */
-    protected $templateVar = [];
-
-    /**
-     * @param array $templateVar
-     */
-    public function setContentByCustomVar(array $templateVar = [])
-    {
-        foreach ($templateVar as $key => $value) {
-            $this->content = str_replace('${' . $key . '}', $value, $this->content);
-        }
-    }
-
-    /**
-     * @param string $content
-     */
-    public function setContent($content)
-    {
-        $this->content = is_string(trim($content)) ? $content : '';
-    }
-
-    /**
-     * @return string
-     */
-    public function getContent()
+    public function getContent(): MailableAbstract
     {
         return $this->content;
     }
 
     /**
-     * @param array $templateVar
-     * @param bool $hasKey
+     * @param MailableAbstract $content
+     * @return MailAbstract
      */
-    public function setTemplateVar(array $templateVar = [], $hasKey = true)
+    public function setContent(MailableAbstract $content): MailAbstract
     {
-        foreach ($templateVar as $key => $value)
-        {
-            if ($hasKey)
-            {
-                $this->templateVar[$key] = "$value";
-            }
-            else
-            {
-                $this->templateVar[] = "'" . $value . "'";
-            }
-        }
-    }
-
-    /**
-     * @return array
-     */
-    public function getTemplateVar()
-    {
-        return $this->templateVar;
-    }
-
-    /**
-     * @param mixed $id
-     */
-    public function setTemplateId($id = null)
-    {
-        $this->templateId = $id ?: 1;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTemplateId()
-    {
-        return $this->templateId;
+        $this->content = $content;
+        return $this;
     }
 
     /**
