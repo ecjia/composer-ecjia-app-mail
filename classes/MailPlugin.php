@@ -123,9 +123,9 @@ class MailPlugin extends PluginModel
     {
         return $query->where('channel_type', 'mail')->where('enabled', 1);
     }
-    
+
     /**
-     * 获取默认插件实例
+     * @return \Ecjia\App\Mail\MailAbstract|ecjia_error
      */
     public function defaultChannel()
     {
@@ -141,10 +141,13 @@ class MailPlugin extends PluginModel
         
         return $handler;
     }
-    
+
+    /**
+     * @return \Ecjia\App\Mail\MailAbstract|ecjia_error
+     */
     public function channel($code = null)
     {
-        if ($code === null) {
+        if (is_null($code)) {
             return $this->defaultChannel();
         }
         

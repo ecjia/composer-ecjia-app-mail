@@ -49,12 +49,105 @@ namespace Ecjia\App\Mail;
 use Ecjia\Component\Plugin\AbstractPlugin;
 
 /**
- * 短信插件抽象类
+ * 邮件插件抽象类
  * @author royalwang
  */
 abstract class MailAbstract extends AbstractPlugin
 {
 
+    /**
+     * 模板内容
+     * @var string
+     */
+    protected $content;
+
+    /**
+     * 厂商模板ID
+     * @var string
+     */
+    protected $templateId;
+
+    /**
+     * 厂商模板变量，数组格式
+     * @var array
+     */
+    protected $templateVar = [];
+
+    /**
+     * @param array $templateVar
+     */
+    public function setContentByCustomVar(array $templateVar = [])
+    {
+        foreach ($templateVar as $key => $value) {
+            $this->content = str_replace('${' . $key . '}', $value, $this->content);
+        }
+    }
+
+    /**
+     * @param string $content
+     */
+    public function setContent($content)
+    {
+        $this->content = is_string(trim($content)) ? $content : '';
+    }
+
+    /**
+     * @return string
+     */
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    /**
+     * @param array $templateVar
+     * @param bool $hasKey
+     */
+    public function setTemplateVar(array $templateVar = [], $hasKey = true)
+    {
+        foreach ($templateVar as $key => $value)
+        {
+            if ($hasKey)
+            {
+                $this->templateVar[$key] = "$value";
+            }
+            else
+            {
+                $this->templateVar[] = "'" . $value . "'";
+            }
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getTemplateVar()
+    {
+        return $this->templateVar;
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setTemplateId($id = null)
+    {
+        $this->templateId = $id ?: 1;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplateId()
+    {
+        return $this->templateId;
+    }
+
+    /**
+     * 发送邮件
+     * @param $email
+     * @return mixed
+     */
+    abstract public function send($email);
 
 }
 

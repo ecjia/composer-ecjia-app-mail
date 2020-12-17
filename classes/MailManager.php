@@ -47,13 +47,12 @@
 
 namespace Ecjia\App\Mail;
 
+use Ecjia\App\Mail\EventFactory\EventAbstract;
+use Ecjia\App\Mail\Events\SendMailAfterEvent;
+use Ecjia\App\Mail\Events\SendMailBeforeEvent;
 use Ecjia\App\Mail\FormRequests\MailSendRequest;
-use Ecjia\App\Sms\Models\SmsTemplateModel;
-use Ecjia\App\Sms\Models\SmsSendlistModel;
-use Ecjia\App\Sms\EventAbstract;
+use Ecjia\App\Mail\Models\MailTemplateModel;
 use ecjia_error;
-use RC_Time;
-use RC_Validator;
 use RC_Hook;
 use RC_Object;
 
@@ -64,7 +63,7 @@ class MailManager extends RC_Object
     protected $event;
     protected $channel;
 
-    public function setTemplateModel(SmsTemplateModel $model)
+    public function setTemplateModel(MailTemplateModel $model)
     {
         $this->model = $model;
         return $this;
@@ -98,87 +97,67 @@ class MailManager extends RC_Object
         return $this->channel;
     }
     
-    
-    public function beforeSend($beforeSend, $email, array $template_var)
+    /** 发送短消息
+     *
+     * @param   string  $email         要发送到邮箱地址，传的值是一个正常的邮箱地址
+     * @param   string  $template_var    短信模板变量，数组格式
+     */
+    public function send($email, array $template_var)
     {
+        $beforeSend = event(new SendMailBeforeEvent($email, $template_var), null, true);
+        if (is_ecjia_error($beforeSend)) {
+            return $beforeSend;
+        }
+
         //发送前处理...
         //验证数据
         $query = ['email' => $email];
         $validator = (new MailSendRequest($query))->make();
-         if ($validator->fails()) {
-             $errors = $validator->errors();
-             $error = $errors->first('email');
-             return new ecjia_error('mail_failed_to_before_send', $error);
-         }
-
-         return true;
-    }
-    
-    /** 发送短消息
-     *
-     * @access  public
-     * @param   string  $mobile         要发送到手机号码，传的值是一个正常的手机号
-     * @param   string  $template       短信模板code
-     * @param   string  $template_var    短信模板变量，数组格式
-     */
-    public function send($mobile, array $template_var)
-    {
-        RC_Hook::add_filter('sms_event_send_before', array($this, 'beforeSend'), 10, 3);
-        
-        $beforeSend = true;
-        $beforeSend = RC_Hook::apply_filters('sms_event_send_before', $beforeSend, $mobile, $template_var);
-        
-        if (is_ecjia_error($beforeSend))
-        {
-            return $beforeSend;
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            $error = $errors->first('email');
+            return new ecjia_error('mail_failed_to_before_send', $error);
         }
-        else 
-        {
-            $sms = new SmsPlugin();
-            if (is_null($this->channel)) {
-                $handler = $sms->defaultChannel();
-            } else {
-                $handler = $sms->channel($this->channel);
-            }
 
-            $plugin = $handler->getCode();
-            //发送
-            $template = $this->model->getTemplateByCode($this->event->getCode(), $plugin);
-            if (empty($template))
-            {
-                return new ecjia_error('sms_template_not_exist', __('短信模板不存在'));
-            }
-            
-            $template_var = $this->matchTemplateVar($template['template_content'], $template_var);
-            
-            $handler->setContent($template['template_content']);
-            $handler->setContentByCustomVar($template_var);
-            $handler->setTemplateVar($template_var);
-            $handler->setTemplateId($template['template_id']);
-            $handler->setSignName($template['sign_name']);
-            if (!empty($this->area_code)) {
-            	$handler->setAreaCode($this->area_code);
-            }
-            
-            $result = $handler->send($mobile);
-            
-            /**
-             * 发送消息后做什么，过滤器
-             * @param $result       发送结果
-             * @param $mobile       手机号
-             * @param $template_var 模板变量
-             * @return $result
-             */
-            $result = RC_Hook::apply_filters('sms_event_send_after', $result, $mobile, $template_var);
-            
-            $this->addRecord($mobile, $template, $template_var, $handler->getContent(), $plugin, $result);
-            
-            if (is_ecjia_error($result)) {
-                return $result;
-            }
-            
-            return true;
+        $pluginManager = new MailPlugin();
+        if (is_null($this->channel)) {
+            $handler = $pluginManager->defaultChannel();
+        } else {
+            $handler = $pluginManager->channel($this->channel);
         }
+
+        $plugin = $handler->getCode();
+        //发送
+        $template = $this->model->getTemplateByCode($this->event->getCode(), $plugin);
+        if (empty($template)) {
+            return new ecjia_error('mail_template_not_exist', __('邮件模板不存在', 'mail'));
+        }
+
+        $template_var = $this->matchTemplateVar($template['template_content'], $template_var);
+
+        $handler->setContent($template['template_content']);
+        $handler->setContentByCustomVar($template_var);
+        $handler->setTemplateVar($template_var);
+        $handler->setTemplateId($template['template_id']);
+
+        $result = $handler->send($email);
+
+        //保存邮件发送记录
+        (new MailRecord($handler, $this))->addRecord($email, $result);
+
+        /**
+         * 发送消息后做什么，过滤器
+         * @param string $email       邮箱
+         * @param array $template_var 模板变量
+         * @param array $result       发送结果
+         * @return $result
+         */
+        $afterSend = event(new SendMailAfterEvent($email, $template_var, $result), null, true);
+        if (is_ecjia_error($afterSend)) {
+            return $afterSend;
+        }
+
+        return true;
     }
     
     /**
@@ -195,133 +174,6 @@ class MailManager extends RC_Object
             if (!in_array($key, $variable)) unset($template_var[$key]);
         }
         return $template_var;
-    }
-    
-    /**
-     * 当短信发送失败时，可重新发送此条短信
-     */
-    public function resend($smsid)
-    {
-        $sms = SmsSendlistModel::find($smsid);
-        if (empty($sms)) {
-            return new ecjia_error('not_found_smsid', __('没有找到此短信记录', 'sms'));
-        }
-    
-        $mobile         = $sms->mobile;
-        $template_var   = unserialize($sms->sms_params);
-        $template_id    = $sms->template_id;
-        $template_content    = $sms->sms_content;
-        $sign_name      = $sms->sign_name;
-        $plugin         = $sms->channel_code;
-    
-        $beforeSend = true;
-        $beforeSend = RC_Hook::apply_filters('sms_resend_send_before', $beforeSend, $mobile, $template_var);
-        if (is_ecjia_error($beforeSend))
-        {
-            return $beforeSend;
-        }
-        else
-        {
-            $handler = with(new SmsPlugin())->channel($plugin);
-            
-            $handler->setContent($template_content);
-            $handler->setTemplateVar($template_var);
-            $handler->setTemplateId($template_id);
-            $handler->setSignName($sign_name);
-            $result = $handler->send($mobile);
-            
-            /**
-             * 重新发送消息后做什么，过滤器
-             * @param $result       推送结果
-             * @param $mobile       手机号
-             * @param $template_var 模板变量
-             * @return $result
-             */
-            $result = RC_Hook::apply_filters('sms_resend_send_after', $result, $mobile, $template_var);
-            
-            $this->updateRecord($sms, $result);
-            
-            if (is_ecjia_error($result)) {
-                return $result;
-            }
-            
-            return true;
-        }
-    
-    }    
-    
-    public function addRecord($mobile, $template, $template_var, $msg, $plugin, $result, $priority = 1)
-    {
-    	if (is_ecjia_error($result)) 
-    	{
-    	    $error_data = $result->get_error_data();
-    	    $msgid = $error_data->getMsgid();
-    	} 
-    	else 
-    	{
-    	    $msgid = $result->getMsgid();
-    	}
-    	
-        $data = array(
-            'mobile'        => $mobile,//手机号码
-            'template_id'   => $template['template_id'],//短信模板ID
-            'sms_content'   => $msg,//短信内容
-            'priority'      => $priority,//优先级高低（0，1）
-            'error'         => 0,//是否出错（0，1）
-            'last_send'     => RC_Time::gmtime(),//最后发送时间
-        	'sms_params'	=> serialize($template_var),//模板内的变量参数，序列化存储
-        	'msgid'         => $msgid,//短信厂商的消息ID
-        	'sign_name'		=> $template['sign_name'],//短信签名
-        	'channel_code'	=> $plugin//短信渠道代码
-        );
-        
-        if (is_ecjia_error($result)) 
-        {
-            $data['error']  = 1;
-            $data['last_error_message'] = $result->get_error_message();
-        }
-        SmsSendlistModel::create($data);
-    }
-    
-    /**
-     * 更新发送记录
-     * @param \Ecjia\App\Sms\Models\SmsSendlistModel $sms
-     * @param array | ecjia_error $result
-     */
-    public function updateRecord($sms, $result)
-    {
-        if (is_ecjia_error($result))
-        {
-            $error_data = $result->get_error_data();
-            $msgid = $error_data->getMsgid();
-
-            $sms->error = 1;
-            $sms->last_error_message = $result->get_error_message();
-        }
-        else
-        {
-            $msgid = $result->getMsgid();
-
-            $sms->error = 0;
-        }
-        
-        $sms->priority = 1;
-        $sms->msgid = $msgid;
-        $sms->last_send = RC_Time::gmtime(); //最后发送时间
-        
-        $sms->save();
-    }
-    
-    /**
-     * 查询账户余额
-     */
-    public function balance($channel)
-    {
-        $sms = new SmsPlugin();
-        $handler = $sms->channel($channel);
-        $result = $handler->balance();
-        
-        return $result;
     }
 
 }
