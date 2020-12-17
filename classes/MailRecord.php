@@ -4,7 +4,7 @@
 namespace Ecjia\App\Mail;
 
 
-use Ecjia\App\Sms\Models\EmailSendlistModel;
+use Ecjia\App\Mail\Models\EmailSendlistModel;
 use RC_Time;
 
 class MailRecord
@@ -34,11 +34,11 @@ class MailRecord
     /**
      * 添加邮件发送记录
      * @param $email
-     * @param array $result
+     * @param ?array $result
      * @param int $priority
-     * @return string
+     * @return void
      */
-    public function addRecord($email, array $result, $priority = 1)
+    public function addRecord($email, ?array $result, $priority = 1)
     {
         if (is_ecjia_error($result)) {
             $error = 1;
@@ -46,15 +46,17 @@ class MailRecord
             $error = 0;
         }
 
+        $template_id = $this->handler->getContent()->getTemplateModel()->id;
+
         $data = array(
             'email'         => $email, //邮箱地址
-            'template_id'   => $this->handler->getTemplateId(), //邮件模板ID
-            'email_content' => $this->handler->getContent(), //邮件内容
+            'template_id'   => $template_id, //邮件模板ID
+            'email_content' => $this->handler->getContent()->, //邮件内容
             'priority'      => $priority, //优先级高低（0，1）1 立即发送，0 异步发送
             'error'         => $error, //是否出错（0，1）
             'last_send'     => RC_Time::gmtime(), //最后发送时间
         );
-
+        //写入数据
         EmailSendlistModel::create($data);
     }
 
