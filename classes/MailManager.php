@@ -53,14 +53,23 @@ use Ecjia\App\Mail\Events\SendMailBeforeEvent;
 use Ecjia\App\Mail\FormRequests\MailSendRequest;
 use Ecjia\App\Mail\Models\MailTemplateModel;
 use ecjia_error;
-use RC_Hook;
 use RC_Object;
 
 class MailManager extends RC_Object
 {
-        
+    /**
+     * @var MailTemplateModel
+     */
     protected $model;
+
+    /**
+     * @var string
+     */
     protected $event;
+
+    /**
+     * @var string
+     */
     protected $channel;
 
     public function setTemplateModel(MailTemplateModel $model)
@@ -166,7 +175,7 @@ class MailManager extends RC_Object
      * @param string $content
      * @param array $template_var
      */
-    protected function matchTemplateVar($content, array $template_var)
+    protected function matchTemplateVar($content, array $template_var): array
     {
         $match = [];
         preg_match_all('|\${(.*)}|U', $content, $match);
