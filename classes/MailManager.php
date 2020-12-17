@@ -51,16 +51,12 @@ use Ecjia\App\Mail\EventFactory\EventAbstract;
 use Ecjia\App\Mail\Events\SendMailAfterEvent;
 use Ecjia\App\Mail\Events\SendMailBeforeEvent;
 use Ecjia\App\Mail\FormRequests\MailSendRequest;
-use Ecjia\App\Mail\Models\MailTemplateModel;
+use Ecjia\App\Mail\Mailable\MailableAbstract;
 use ecjia_error;
 use RC_Object;
 
 class MailManager extends RC_Object
 {
-    /**
-     * @var MailTemplateModel
-     */
-    protected $model;
 
     /**
      * @var EventAbstract
@@ -72,16 +68,6 @@ class MailManager extends RC_Object
      */
     protected $channel;
 
-    public function setTemplateModel(MailTemplateModel $model)
-    {
-        $this->model = $model;
-        return $this;
-    }
-    
-    public function getTemplateModel()
-    {
-        return $this->model;
-    }
     
     public function setEvent(EventAbstract $event)
     {
@@ -109,12 +95,12 @@ class MailManager extends RC_Object
     /** 发送短消息
      *
      * @param string $email 要发送到邮箱地址，传的值是一个正常的邮箱地址
-     * @param array $template_var 短信模板变量，数组格式
+     * @param MailableAbstract $content 邮件内容对象
      * @return array|bool|ecjia_error|null
      */
-    public function send($email, array $template_var)
+    public function send($email, MailableAbstract $content)
     {
-        $beforeSend = event(new SendMailBeforeEvent($email, $template_var), null, true);
+        $beforeSend = event(new SendMailBeforeEvent($email, $content), null, true);
         if (is_ecjia_error($beforeSend)) {
             return $beforeSend;
         }
@@ -136,20 +122,7 @@ class MailManager extends RC_Object
             $handler = $pluginManager->channel($this->channel);
         }
 
-        $plugin = $handler->getCode();
-        //发送
-        $template = $this->model->getTemplateByCode($this->event->getCode(), $plugin);
-        if (empty($template)) {
-            return new ecjia_error('mail_template_not_exist', __('邮件模板不存在', 'mail'));
-        }
-
-        $template_var = $this->matchTemplateVar($template['template_content'], $template_var);
-
-        $handler->setContent($template['template_content']);
-        $handler->setContentByCustomVar($template_var);
-        $handler->setTemplateVar($template_var);
-        $handler->setTemplateId($template['template_id']);
-
+        $handler->setContent($content);
         $result = $handler->send($email);
 
         //保存邮件发送记录
@@ -162,7 +135,7 @@ class MailManager extends RC_Object
          * @param array $result       发送结果
          * @return $result
          */
-        $afterSend = event(new SendMailAfterEvent($email, $template_var, $result), null, true);
+        $afterSend = event(new SendMailAfterEvent($email, $content, $result), null, true);
         if (is_ecjia_error($afterSend)) {
             return $afterSend;
         }
