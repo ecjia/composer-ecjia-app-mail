@@ -3,6 +3,7 @@
 
 namespace Ecjia\App\Mail\Events;
 
+use Ecjia\App\Mail\Mailable\MailableAbstract;
 
 class SendMailAfterEvent
 {
@@ -15,9 +16,9 @@ class SendMailAfterEvent
 
     /**
      * 模板变量
-     * @var array
+     * @var MailableAbstract
      */
-    public $template_var;
+    public $content;
 
     /**
      * 发送结果
@@ -28,13 +29,13 @@ class SendMailAfterEvent
     /**
      * SendMailAfterEvent constructor.
      * @param string $email
-     * @param array $template_var
-     * @param array $result
+     * @param MailableAbstract $content
+     * @param ?array $result
      */
-    public function __construct(string $email, array $template_var, array $result)
+    public function __construct(string $email, MailableAbstract $content, ?array $result)
     {
         $this->email        = $email;
-        $this->template_var = $template_var;
+        $this->content = $content;
         $this->result       = $result;
     }
 

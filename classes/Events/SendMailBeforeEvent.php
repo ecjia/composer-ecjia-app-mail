@@ -3,6 +3,7 @@
 
 namespace Ecjia\App\Mail\Events;
 
+use Ecjia\App\Mail\Mailable\MailableAbstract;
 
 class SendMailBeforeEvent
 {
@@ -13,19 +14,19 @@ class SendMailBeforeEvent
     public $email;
 
     /**
-     * @var array
+     * @var MailableAbstract
      */
-    public $template_var;
+    public $content;
 
     /**
      * SendMailBeforeEvent constructor.
      * @param string $email
      * @param array $template_var
      */
-    public function __construct(string $email, array $template_var)
+    public function __construct(string $email, MailableAbstract $content)
     {
         $this->email        = $email;
-        $this->template_var = $template_var;
+        $this->content = $content;
     }
 
 }
