@@ -93,6 +93,10 @@ class MailTemplateModel extends Model
     
     public function getTemplateByCode($code, $plugin = null)
     {
+        if (is_null($plugin)) {
+            return $this->mail()->where('template_code', $code)->first();
+        }
+
         return $this->mail()->plugin($plugin)->where('template_code', $code)->first();
     }
     

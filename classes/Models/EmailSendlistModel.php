@@ -45,7 +45,7 @@
 //  ---------------------------------------------------------------------------------
 //
 
-namespace Ecjia\App\Sms\Models;
+namespace Ecjia\App\Mail\Models;
 
 use Royalcms\Component\Database\Eloquent\Model;
 
