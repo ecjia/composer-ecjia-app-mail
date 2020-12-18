@@ -63,7 +63,7 @@ class MailRecord
                 'last_send'     => RC_Time::gmtime(), //最后发送时间
             );
             //写入数据
-            EmailSendlistModel::insert($data);
+            EmailSendlistModel::create($data);
         } catch (\Exception $exception) {
             ecjia_log_error($exception);
         }
