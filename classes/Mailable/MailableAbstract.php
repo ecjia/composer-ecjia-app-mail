@@ -17,10 +17,6 @@ abstract class MailableAbstract extends \Illuminate\Mail\Mailable
      */
     protected $templateModel;
 
-    /**
-     * @var string
-     */
-    protected $renderContent;
 
     public function __construct()
     {
@@ -100,24 +96,6 @@ abstract class MailableAbstract extends \Illuminate\Mail\Mailable
     public function setTemplateModel(MailTemplateModel $templateModel): MailableAbstract
     {
         $this->templateModel = $templateModel;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRenderContent(): string
-    {
-        return $this->renderContent;
-    }
-
-    /**
-     * @param string $renderContent
-     * @return MailableAbstract
-     */
-    public function setRenderContent(string $renderContent): MailableAbstract
-    {
-        $this->renderContent = $renderContent;
         return $this;
     }
 
