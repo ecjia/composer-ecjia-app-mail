@@ -84,7 +84,7 @@ abstract class MailableAbstract extends \Illuminate\Mail\Mailable
     /**
      * @return MailTemplateModel
      */
-    public function getTemplateModel(): MailTemplateModel
+    public function getTemplateModel(): ?MailTemplateModel
     {
         return $this->templateModel;
     }
