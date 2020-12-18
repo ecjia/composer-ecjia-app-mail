@@ -80,7 +80,7 @@ class AdminMailTestController extends AdminBase
             }
         } catch (\Exception $exception) {
             return $this->showmessage($exception->getMessage(), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
-        } catch (\TypeError $exception) {
+        } catch (\Error $exception) {
             return $this->showmessage($exception->getMessage(), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
     }
