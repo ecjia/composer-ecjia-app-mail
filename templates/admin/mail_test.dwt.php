@@ -3,7 +3,18 @@
 
 <!-- {block name="footer"} -->
 <script type="text/javascript">
-	ecjia.admin.mail_settings.setmail();
+	// ecjia.admin.mail_settings.setmail();
+    var $form = $('form[name="theForm"]');
+    $form.validate({
+        submitHandler: function () {
+            $form.ajaxSubmit({
+                dataType: "json",
+                success: function (data) {
+                    ecjia.admin.showmessage(data);
+                }
+            });
+        }
+    });
 </script>
 <!-- {/block} -->
 
@@ -21,7 +32,7 @@
 					<label class="control-label" for="user_name">{t domain="mail"}邮件地址：{/t}</label>
 					<div class="controls">
 						<input class="span4" id="test_mail_address" type="text" name="test_mail_address"/>
-						<button class="btn test_mail" type="button" name="test_mail" data-href="{url path='mail/admin_mail_test/send_test_email'}">{t domain="mail"}发送测试邮件{/t}</button>
+						<button class="btn" type="submit">{t domain="mail"}发送测试邮件{/t}</button>
 					</div>
 				</div>
 			</fieldset>
