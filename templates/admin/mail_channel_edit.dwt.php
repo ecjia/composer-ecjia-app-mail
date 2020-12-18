@@ -38,20 +38,23 @@
 				<div class="control-group formSep">
 					<label class="control-label">{$config.label}</label>
 					<div class="controls">
+                        {assign var="input_name" value={$config.name}}
 						<!-- {if $config.type == "text"} -->
-						<input class="w350" id="cfg_value[]" name="cfg_value[]" type="{$config.type}" value="{$config.value}" size="40" />
-						<!-- {elseif $config.type == "textarea"} -->
-						<textarea class="w350" id="cfg_value[]" name="cfg_value[]" cols="80" rows="5">{$config.value}</textarea>
+						<input class="w350" id="cfg_value[]" name="cfg_value[{$input_name}]" type="{$config.type}" value="{$config.value}" size="40" />
+                        <!-- {elseif $config.type == "password"} -->
+                        <input class="w350" id="cfg_value[]" name="cfg_value[{$input_name}]" type="{$config.type}" value="{$config.value}" size="40" />
+                        <!-- {elseif $config.type == "textarea"} -->
+						<textarea class="w350" id="cfg_value[]" name="cfg_value[{$input_name}]" cols="80" rows="5">{$config.value}</textarea>
 						<!-- {elseif $config.type == "select"} -->
-						<select class="w350" id="cfg_value[]" name="cfg_value[]"  >
-                            <!-- {html_options options=$config.range selected=$config.value} -->
+						<select class="w350" id="cfg_value[]" name="cfg_value[{$input_name}]"  >
+                            <!-- {html_options options=$config.range name="cfg_value[$input_name]" selected=$config.value} -->
 						</select>
                         <!-- {elseif $config.type == "radiobox"} -->
-                        <!-- {html_radios options=$config.range name=$config.name values=array_keys($config.range) output=array_values($config.range) selected=$config.value labels=0} -->
+                        <!-- {html_radios options=$config.range name="cfg_value[$input_name]" values=array_keys($config.range) output=array_values($config.range) selected=$config.value labels=0} -->
                         <!-- {/if} -->
-						<input name="cfg_name[]" type="hidden" value="{$config.name}" />
-						<input name="cfg_type[]" type="hidden" value="{$config.type}" />
-						<input name="cfg_lang[]" type="hidden" value="{$config.lang}" />
+						<input name="cfg_name[{$input_name}]" type="hidden" value="{$config.name}" />
+						<input name="cfg_type[{$input_name}]" type="hidden" value="{$config.type}" />
+						<input name="cfg_lang[{$input_name}]" type="hidden" value="{$config.lang}" />
 						{if $config.desc}
     					<span class="help-block">{$config.desc}</span>
     					{/if}
