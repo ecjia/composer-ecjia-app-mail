@@ -125,9 +125,8 @@ class MailManager extends RC_Object
         $handler->setContent($content);
         $result = $handler->send($email);
 
-//        dd($result);
         //保存邮件发送记录
-//        (new MailRecord($handler, $this))->addRecord($email, $result);
+        (new MailRecord($handler, $this))->addRecord($email, $result);
 
         /**
          * 发送消息后做什么，过滤器
