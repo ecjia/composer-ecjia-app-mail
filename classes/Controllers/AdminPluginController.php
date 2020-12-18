@@ -125,6 +125,7 @@ class AdminPluginController extends AdminBase
 
         /* 取得配置信息 */
         $channel_config = unserialize($channel_info['channel_config']);
+        $channel_info['channel_desc'] = rc_stripslashes($channel_info['channel_desc']);
 
         try {
             /* 取出已经设置属性的code */
@@ -193,11 +194,11 @@ class AdminPluginController extends AdminBase
         /* 取得配置信息 */
         $config = array();
         if (isset($_POST['cfg_value']) && is_array($_POST['cfg_value'])) {
-            for ($i = 0; $i < count($_POST['cfg_value']); $i++) {
+            foreach ($_POST['cfg_value'] as $name => $value) {
                 $config[] = array(
-                    'name'  => trim($_POST['cfg_name'][$i]),
-                    'type'  => trim($_POST['cfg_type'][$i]),
-                    'value' => trim($_POST['cfg_value'][$i]),
+                    'name'  => trim($_POST['cfg_name'][$name]),
+                    'type'  => trim($_POST['cfg_type'][$name]),
+                    'value' => trim($_POST['cfg_value'][$name]),
                 );
             }
         }
