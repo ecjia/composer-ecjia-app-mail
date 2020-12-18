@@ -30,13 +30,13 @@ class SendMailAfterEvent
      * SendMailAfterEvent constructor.
      * @param string $email
      * @param MailableAbstract $content
-     * @param ?array $result
+     * @param mixed $result
      */
-    public function __construct(string $email, MailableAbstract $content, ?array $result)
+    public function __construct(string $email, MailableAbstract $content, $result)
     {
-        $this->email        = $email;
+        $this->email   = $email;
         $this->content = $content;
-        $this->result       = $result;
+        $this->result  = $result;
     }
 
 
