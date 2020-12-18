@@ -183,22 +183,22 @@ class AdminPluginController extends AdminBase
 
         /* 检查输入 */
         if (empty($name)) {
-            return $this->showmessage(__('请输入短信渠道名称', 'mail'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+            return $this->showmessage(__('请输入渠道名称', 'mail'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
 
         $count = RC_DB::connection(config('cashier.database_connection', 'default'))->table('notification_channels')->where('channel_name', $name)->where('channel_code', '!=', $code)->where('channel_type', $type)->count();
         if ($count > 0) {
-            return $this->showmessage(__('该短信渠道名称已存在', 'mail'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+            return $this->showmessage(__('该渠道名称已存在', 'mail'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
 
         /* 取得配置信息 */
         $config = array();
         if (isset($_POST['cfg_value']) && is_array($_POST['cfg_value'])) {
-            foreach ($_POST['cfg_value'] as $name => $value) {
+            foreach ($_POST['cfg_value'] as $key => $value) {
                 $config[] = array(
-                    'name'  => trim($_POST['cfg_name'][$name]),
-                    'type'  => trim($_POST['cfg_type'][$name]),
-                    'value' => trim($_POST['cfg_value'][$name]),
+                    'name'  => trim($_POST['cfg_name'][$key]),
+                    'type'  => trim($_POST['cfg_type'][$key]),
+                    'value' => trim($_POST['cfg_value'][$key]),
                 );
             }
         }
