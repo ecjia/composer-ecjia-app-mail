@@ -62,20 +62,24 @@ class AdminMailTestController extends AdminBase
      */
     public function send_test_email()
     {
-        $this->admin_priv('mail_settings_manage', ecjia::MSGTYPE_JSON);
+        try {
+            $this->admin_priv('mail_settings_manage', ecjia::MSGTYPE_JSON);
 
-        $test_mail_address = trim($_POST['test_mail_address']);
-        if (empty($test_mail_address)) {
-            return $this->showmessage(__('测试邮件地址不能为空！', 'mail'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
-        }
+            $test_mail_address = trim($_POST['test_mail_address']);
+            if (empty($test_mail_address)) {
+                return $this->showmessage(__('测试邮件地址不能为空！', 'mail'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+            }
 
-        $result = MailManager::make()
-            ->send($test_mail_address, new TestSendMailService());
+            $result = MailManager::make()
+                ->send($test_mail_address, new TestSendMailService());
 
-        if ( is_ecjia_error($result) ) {
-            return $this->showmessage(sprintf(__('测试邮件发送失败！%s', 'mail'), $result->get_error_message()), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
-        } else {
-            return $this->showmessage(sprintf(__('恭喜！测试邮件已成功发送到 %s。', 'mail'), $test_mail_address), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
+            if (is_ecjia_error($result)) {
+                return $this->showmessage(sprintf(__('测试邮件发送失败！%s', 'mail'), $result->get_error_message()), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+            } else {
+                return $this->showmessage(sprintf(__('恭喜！测试邮件已成功发送到 %s。', 'mail'), $test_mail_address), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
+            }
+        } catch (\Exception $exception) {
+            return $this->showmessage($exception->getMessage(), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
     }
 
