@@ -47,7 +47,12 @@ class MailRecord
                 $error = 0;
             }
 
-            $template_id = $this->handler->getContent()->getTemplateModel()->id;
+            if (! empty($this->handler->getContent()->getTemplateModel())) {
+                $template_id = $this->handler->getContent()->getTemplateModel()->id;
+            }
+            else {
+                $template_id = 0;
+            }
 
             $data = array(
                 'email'         => $email, //邮箱地址
