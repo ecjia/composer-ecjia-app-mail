@@ -25,6 +25,16 @@ abstract class MailableAbstract extends \Illuminate\Mail\Mailable
     public function __construct()
     {
         $this->templateModel = (new MailTemplateModel())->getTemplateByCode($this->eventCode);
+
+    }
+
+    public function build()
+    {
+        $this->from(config('mail.from.address'), config('mail.from.name'));
+
+        $this->withSwiftMessage(function ($message) {
+            $message->setCharset(config('mail.charset'));
+        });
     }
 
     /**
@@ -110,7 +120,6 @@ abstract class MailableAbstract extends \Illuminate\Mail\Mailable
         $this->renderContent = $renderContent;
         return $this;
     }
-
 
 
 }

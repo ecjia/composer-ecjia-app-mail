@@ -2,7 +2,11 @@
 
 namespace Ecjia\App\Mail;
 
+use Ecjia\App\Mail\Events\ResetMailConfigEvent;
+use Ecjia\App\Mail\Listeners\ResetMailSmtpServiceListener;
 use ecjia_admin_log;
+use RC_Event;
+use RC_Hook;
 use RC_Service;
 use Royalcms\Component\App\AppParentServiceProvider;
 
@@ -14,6 +18,11 @@ class MailServiceProvider extends  AppParentServiceProvider
         $this->package('ecjia/app-mail');
 
         $this->assignAdminLogContent();
+
+        $this->bootEvent();
+
+        //hook
+//        RC_Hook::add_action('reset_mail_config', ['Ecjia\Component\Mailer\Mailer', 'ecjia_mail_config']);
     }
     
     public function register()
@@ -31,6 +40,11 @@ class MailServiceProvider extends  AppParentServiceProvider
         RC_Service::addService('plugin_install', 'mail', 'Ecjia\App\Mail\Services\PluginInstallService');
         RC_Service::addService('plugin_uninstall', 'mail', 'Ecjia\App\Mail\Services\PluginUninstallService');
         RC_Service::addService('send_event_mail', 'mail', 'Ecjia\App\Mail\Services\SendEventMailService');
+    }
+
+    protected function bootEvent()
+    {
+        RC_Event::listen(ResetMailConfigEvent::class, ResetMailSmtpServiceListener::class);
     }
 
     /**
