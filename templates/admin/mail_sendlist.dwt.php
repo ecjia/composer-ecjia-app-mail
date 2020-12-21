@@ -84,7 +84,7 @@
 					<!-- {/foreach} -->
 				</tbody>
 			</table>
-			<!-- {$listdb.page} -->
+			<!-- {$send_list.page} -->
 		</form>
 	</div>
 </div> 
