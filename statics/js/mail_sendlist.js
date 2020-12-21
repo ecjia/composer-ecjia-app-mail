@@ -15,7 +15,7 @@
         //显示全屏Loading图
         FullScreenShow: function (msg) {
             if (msg === undefined) {
-                msg = js_lang_view_sendlist.data_loading;
+                msg = js_lang_mail_sendlist.data_loading;
             }
  
             if ($("#div_loadingImg").length == 0) {
@@ -50,7 +50,7 @@
             $partImage.remove();
             $partObj.removeClass('loadingPage_partDiv');
             if (msg === undefined) {
-                msg = js_lang_view_sendlist.sending_email;
+                msg = js_lang_mail_sendlist.sending_email;
             }
  
             var htmlText = ' <div class="loadingPage_bg1"></div><div class="loadingPageimage" >' + msg + '</div>';
@@ -146,10 +146,10 @@
                                         ecjia.admin.showmessage(data);
                                     });
                                 } else {
-                                    ecjia.admin.showmessage(js_lang_view_sendlist.no_match_records);
+                                    ecjia.admin.showmessage(js_lang_mail_sendlist.no_match_records);
                                 }
                             } else {
-                                ecjia.admin.showmessage(js_lang_view_sendlist.no_match_records);
+                                ecjia.admin.showmessage(js_lang_mail_sendlist.no_match_records);
                             }
                         }
                     });
@@ -157,7 +157,7 @@
             });
             isSendAll = false;
             $('#send-all').on('click', function (e) {
-                smoke.confirm(js_lang_view_sendlist.send_confirm, function (e) {
+                smoke.confirm(js_lang_mail_sendlist.send_confirm, function (e) {
                     if (e) {
                         $form.submit();
                         //遮罩效果
@@ -167,8 +167,8 @@
                         return false;
                     }
                 }, {
-                    ok: js_lang_view_sendlist.ok,
-                    cancel: js_lang_view_sendlist.cancel
+                    ok: js_lang_mail_sendlist.ok,
+                    cancel: js_lang_mail_sendlist.cancel
                 });
             });
             
@@ -178,10 +178,10 @@
                     checkboxes.push($(this).val());
                 });
                 if (checkboxes == '') {
-                    smoke.alert(js_lang_view_sendlist.select_send_email);
+                    smoke.alert(js_lang_mail_sendlist.select_send_email);
                     return false;
                 } else {
-                    smoke.confirm(js_lang_view_sendlist.batch_send_confirm, function (e) {
+                    smoke.confirm(js_lang_mail_sendlist.batch_send_confirm, function (e) {
                         if (e) {
                             $form.attr('action', $('.batchsend').attr('data-url'));
                             $form.submit();
@@ -192,8 +192,8 @@
                             return false;
                         }
                     }, {
-                        ok: js_lang_view_sendlist.ok,
-                        cancel: js_lang_view_sendlist.cancel
+                        ok: js_lang_mail_sendlist.ok,
+                        cancel: js_lang_mail_sendlist.cancel
                     });
                 }
             });

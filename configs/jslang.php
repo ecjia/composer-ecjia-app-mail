@@ -81,7 +81,7 @@ return array(
         'content_no_empty' => __('模板内容不能为空！', 'push'),
     ),
 
-    'view_sendlist_page' => array(
+    'mail_sendlist_page' => array(
         'data_loading'       => __('数据加载中, 请稍等...', 'mail'),
         'sending_email'      => __('正在发送邮件, 请稍等...', 'mail'),
         'no_match_records'   => __('没有找到匹配的记录！', 'mail'),

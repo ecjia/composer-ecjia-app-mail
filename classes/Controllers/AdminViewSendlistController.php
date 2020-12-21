@@ -75,11 +75,11 @@ class AdminViewSendlistController extends AdminBase
         RC_Script::enqueue_script('smoke');
         RC_Style::enqueue_style('chosen');
         RC_Style::enqueue_style('uniform-aristo');
-        RC_Script::enqueue_script('view_sendlist', RC_App::apps_url('statics/js/view_sendlist.js', $this->__FILE__));
         RC_Script::enqueue_script('jquery-uniform');
         RC_Script::enqueue_script('jquery-chosen');
 
-        RC_Script::localize_script('view_sendlist', 'js_lang_view_sendlist', config('app-mail::jslang.view_sendlist_page'));
+        RC_Script::enqueue_script('mail_sendlist', RC_App::apps_url('statics/js/mail_sendlist.js', $this->__FILE__));
+        RC_Script::localize_script('mail_sendlist', 'js_lang_mail_sendlist', config('app-mail::jslang.mail_sendlist_page'));
     }
 
     public function init()
@@ -109,7 +109,7 @@ class AdminViewSendlistController extends AdminBase
         $this->assign('form_action', RC_Uri::url('mail/admin_view_sendlist/all_send'));
         $this->assign('search_action', RC_Uri::url('mail/admin_view_sendlist/init'));
 
-        return $this->display('view_sendlist.dwt');
+        return $this->display('mail_sendlist.dwt');
     }
 
     /**
