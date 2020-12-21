@@ -75,8 +75,15 @@ class EmailSendlistModel extends Model
      * @var bool
      */
     public $timestamps = false;
-    
-    
+
+    /**
+     * 一对一
+     * 邮件模板绑定的参数模板模型信息
+     */
+    public function mail_template_model()
+    {
+        return $this->hasOne(MailTemplateModel::class, 'id', 'template_id');
+    }
     
     
 }

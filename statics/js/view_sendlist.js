@@ -122,15 +122,10 @@
             $('.screen-btn').on('click', function (e) {
                 e.preventDefault();
                 var pri_param1 = '';
-                var pri_param2 = '';
                 if ($("#select-pri option:selected").val() !== '') {
                     pri_param1 = '&pri_id=' + $("#select-pri option:selected").val();
                 }
-                if ($("#select-typemail option:selected").val() !== 0) {
-                    pri_param2 = '&typemail_id=' + $("#select-typemail option:selected").val();
-                }
- 
-                var url = $("form[name='searchForm']").attr('action') + pri_param1 + pri_param2;
+                var url = $("form[name='searchForm']").attr('action') + pri_param1;
                 ecjia.pjax(url);
             })
  
