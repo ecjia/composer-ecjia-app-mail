@@ -104,7 +104,7 @@
     }
     /****************遮罩效果js --start **********************/
     var isSendAll;
-    app.view_sendlist = {
+    app.mail_sendlist = {
         init: function () {
             /* 判断按纽是否可点 */
             var inputbool = false;

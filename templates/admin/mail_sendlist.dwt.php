@@ -3,7 +3,7 @@
 
 <!-- {block name="footer"} -->
 <script type="text/javascript">
-	ecjia.admin.view_sendlist.init();
+	ecjia.admin.mail_sendlist.init();
 </script>
 <!-- {/block} -->
 
@@ -26,7 +26,7 @@
 				<span class="caret"></span>
 			</a>
 			<ul class="dropdown-menu">
-				<li><a class="batchdel" data-toggle="ecjiabatch" data-idClass=".checkbox:checked" data-url="{url path='mail/admin_view_sendlist/batch' args='sel_action=batchdel'}" data-msg='{t domain="mail"}您确定要删除选中的邮件吗？{/t}' data-noSelectMsg='{t domain="mail"}请先选中要删除的邮件！{/t}' data-name="checkboxes" href="javascript:;"><i class="fontello-icon-trash"></i>{t domain="mail"}删除邮件记录{/t}</a></li>
+				<li><a class="batchdel" data-toggle="ecjiabatch" data-idClass=".checkbox:checked" data-url="{url path='mail/admin_mail_sendlist/batch' args='sel_action=batchdel'}" data-msg='{t domain="mail"}您确定要删除选中的邮件吗？{/t}' data-noSelectMsg='{t domain="mail"}请先选中要删除的邮件！{/t}' data-name="checkboxes" href="javascript:;"><i class="fontello-icon-trash"></i>{t domain="mail"}删除邮件记录{/t}</a></li>
 			</ul>
 		</div>
 
@@ -70,7 +70,7 @@
 							<span class="ecjiafc-red">{$val.error}{t domain="mail"}次发送错误{/t}</span>
 							{/if}
                             <div class="edit-list">
-                                <a class="ajaxremove ecjiafc-red" data-toggle="ajaxremove" data-msg='{t domain="mail"}您确定要删除该邮件信息吗？{/t}' href='{RC_Uri::url("mail/admin_view_sendlist/remove", "id={$val.id}")}' title='{t domain="mail"}移除{/t}'>{t domain="mail"}删除{/t}</a>
+                                <a class="ajaxremove ecjiafc-red" data-toggle="ajaxremove" data-msg='{t domain="mail"}您确定要删除该邮件信息吗？{/t}' href='{RC_Uri::url("mail/admin_mail_sendlist/remove", "id={$val.id}")}' title='{t domain="mail"}移除{/t}'>{t domain="mail"}删除{/t}</a>
                             </div>
                         </td>
 						<td>

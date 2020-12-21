@@ -63,7 +63,7 @@ use RC_Uri;
  * ECJia 邮件队列管理
  * @author songqian
  */
-class AdminViewSendlistController extends AdminBase
+class AdminMailSendlistController extends AdminBase
 {
 
     public function __construct()
@@ -106,8 +106,8 @@ class AdminViewSendlistController extends AdminBase
 
         $this->assign('send_list', $send_list);
 
-        $this->assign('form_action', RC_Uri::url('mail/admin_view_sendlist/all_send'));
-        $this->assign('search_action', RC_Uri::url('mail/admin_view_sendlist/init'));
+        $this->assign('form_action', RC_Uri::url('mail/admin_mail_sendlist/all_send'));
+        $this->assign('search_action', RC_Uri::url('mail/admin_mail_sendlist/init'));
 
         return $this->display('mail_sendlist.dwt');
     }
