@@ -49,6 +49,7 @@ namespace Ecjia\App\Mail\Controllers;
 use admin_nav_here;
 use ecjia;
 use Ecjia\App\Mail\Models\EmailSendlistModel;
+use Ecjia\App\Mail\Models\MailTemplateModel;
 use ecjia_admin;
 use ecjia_page;
 use ecjia_screen;
@@ -117,15 +118,19 @@ class AdminMailSendlistController extends AdminBase
      */
     public function remove()
     {
-        $this->admin_priv('email_sendlist_delete', ecjia::MSGTYPE_JSON);
+        try {
+            $this->admin_priv('email_sendlist_delete', ecjia::MSGTYPE_JSON);
 
-        $id = intval($_GET['id']);
-        $info = \Ecjia\App\Mail\EmailSendlist::EmailSendlistInfo($id);
+            $id = intval($_GET['id']);
 
-        \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($id);
+            EmailSendlistModel::where('id', $id)->delete();
 
-        ecjia_admin::admin_log(sprintf(__('邮件标题是 %s', 'mail'), $info['template_subject']) . '，' . sprintf(__('邮件地址是 %s', 'mail'), $info['email']), 'remove', 'subscription_email');
-        return $this->showmessage(sprintf(__('共删除 %d 条记录，删除成功！', 'mail'), 1), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
+            ecjia_admin::admin_log(sprintf(__('删除邮件记录，编号是 %s', 'mail'), $id), 'remove', 'email_sendlist');
+
+            return $this->showmessage(sprintf(__('共删除 %d 条记录，删除成功！', 'mail'), 1), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
+        } catch (\Exception $exception) {
+            return $this->showmessage($exception->getMessage(), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+        }
     }
 
     /**
@@ -150,17 +155,15 @@ class AdminMailSendlistController extends AdminBase
             return $this->showmessage(__('没有选择消息', 'mail'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
 
-        $info = \Ecjia\App\Mail\EmailSendlist::EmailSendlistSelect($ids);
-
         switch ($action) {
             case 'batchdel':
-                \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($ids);
+                MailTemplateModel::whereIn('id', $ids)->delete();
 
-                foreach ($info as $key => $v) {
-                    ecjia_admin::admin_log(sprintf(__('删除邮件记录是 %s，邮件地址是 %s', 'mail'), $v['template_subject'], $v['email']), 'batch_remove', 'email');
+                foreach ($ids as $id) {
+                    ecjia_admin::admin_log(sprintf(__('删除邮件记录，编号是 %s', 'mail'), $id), 'remove', 'email_sendlist');
                 }
 
-                return $this->showmessage(sprintf(__('共删除 %d 条记录，删除成功！', 'mail'), count($ids)), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('mail/admin_view_sendlist/init')));
+                return $this->showmessage(sprintf(__('共删除 %d 条记录，删除成功！', 'mail'), count($ids)), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('mail/admin_mail_sendlist/init')));
                 break;
             default :
                 break;

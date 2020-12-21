@@ -55,6 +55,7 @@ class MailServiceProvider extends  AppParentServiceProvider
         ecjia_admin_log::instance()->add_object('email', __('邮件地址', 'mail'));
         ecjia_admin_log::instance()->add_object('subscription_email', __('订阅邮件', 'mail'));
         ecjia_admin_log::instance()->add_object('email_template', __('邮件模板', 'mail'));
+        ecjia_admin_log::instance()->add_object('email_sendlist', __('邮件记录', 'mail'));
 
         ecjia_admin_log::instance()->add_action('batch_send', __('批量发送', 'mail'));
         ecjia_admin_log::instance()->add_action('all_send', __('全部发送', 'mail'));
