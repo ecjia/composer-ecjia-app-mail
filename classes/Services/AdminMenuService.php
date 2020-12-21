@@ -28,7 +28,7 @@ class AdminMenuService
             ecjia_admin::make_admin_menu('divider', '', '', 20)->add_purview('mail_template_manage'),
             ecjia_admin::make_admin_menu('email_list', __('邮件订阅管理', 'mail'), RC_Uri::url('mail/admin_email_list/init'), 21)->add_purview('email_list_manage'),
         );
-        
+
         $menus->add_submenu($submenus);
     	
     	return $menus;
