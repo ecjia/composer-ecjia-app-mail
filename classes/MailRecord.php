@@ -42,6 +42,8 @@ class MailRecord
     {
         try {
             if (is_ecjia_error($result)) {
+                //写入错误日志
+                ecjia_log_error($result->get_error_message());
                 $error = 1;
             } else {
                 $error = 0;
