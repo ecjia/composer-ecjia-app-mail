@@ -48,6 +48,7 @@ namespace Ecjia\App\Mail\Controllers;
 
 use admin_nav_here;
 use ecjia;
+use Ecjia\App\Mail\Models\EmailSendlistModel;
 use ecjia_admin;
 use ecjia_page;
 use ecjia_screen;
@@ -85,7 +86,7 @@ class AdminViewSendlistController extends AdminBase
     {
         $this->admin_priv('email_sendlist_manage');
 
-        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('邮件队列管理', 'mail')));
+        ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here(__('邮件发送队列', 'mail')));
         ecjia_screen::get_current_screen()->add_help_tab(array(
             'id'      => 'overview',
             'title'   => __('概述', 'mail'),
@@ -97,17 +98,13 @@ class AdminViewSendlistController extends AdminBase
             '<p>' . __('<a href="https://ecjia.com/wiki/帮助:ECJia智能后台:邮件对列管理" target="_blank">关于邮件队列管理帮助文档</a>', 'mail') . '</p>'
         );
 
-        $this->assign('ur_here', __('邮件队列管理', 'mail'));
+        $this->assign('ur_here', __('邮件发送队列', 'mail'));
         $pri  = config('app-mail::mail_config.pri');
-        $type = config('app-mail::mail_config.type');
         $this->assign('pri', $pri);
-        $this->assign('type', $type);
 
-        $listdb = $this->get_send_list();
-        if (count($listdb['item']) > 0) {
-            $this->assign('isSendAll', 1);
-        }
-        $this->assign('listdb', $listdb);
+        $send_list = $this->get_send_list();
+
+        $this->assign('send_list', $send_list);
 
         $this->assign('form_action', RC_Uri::url('mail/admin_view_sendlist/all_send'));
         $this->assign('search_action', RC_Uri::url('mail/admin_view_sendlist/init'));
@@ -143,159 +140,31 @@ class AdminViewSendlistController extends AdminBase
 
         if (empty($action)) {
             return $this->showmessage(__('请选择要进行的操作', 'mail'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
-        } elseif ($action == 'batchsend') {
-            $this->admin_priv('email_sendlist_update', ecjia::MSGTYPE_JSON);
         }
+
         if (!is_array($ids)) {
             $ids = explode(',', $ids);
         }
-        if (!empty($ids)) {
-            $info = \Ecjia\App\Mail\EmailSendlist::EmailSendlistSelect($ids);
 
-            switch ($action) {
-                case 'batchdel':
-                    \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($ids);
-
-                    foreach ($info as $key => $v) {
-                        ecjia_admin::admin_log(sprintf(__('邮件标题是 %s', 'mail'), $v['template_subject']) . '，' . sprintf(__('邮件地址是 %s', 'mail'), $v['email']), 'batch_remove', 'email');
-                    }
-
-                    return $this->showmessage(sprintf(__('共删除 %d 条记录，删除成功！', 'mail'), count($ids)), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('mail/admin_view_sendlist/init')));
-                    break;
-                case 'batchsend' :
-                    $data = \Ecjia\App\Mail\EmailSendlist::EmailSendlistSelect($ids, array('pri' => 'DESC', 'last_send' => 'ASC'));
-
-
-                    if (!empty($data)) {
-                        $record_count = array('empty_mail' => 0, 'send_success' => 0, 'send_error' => 0, 'noeffect' => 0);
-                        foreach ($data as $key => $row) {
-                            //发送列表不为空，邮件地址为空
-                            if (!empty($row['id']) && empty($row['email'])) {
-                                \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($row['id']);
-
-                                $record_count['empty_mail']++;
-                                continue;
-                            }
-
-                            //查询相关模板
-                            $rt = \Ecjia\App\Mail\MailTeplates::MailTemplatesInfo($row['template_id']);
-
-                            //如果是模板，则将已存入email_sendlist的内容作为邮件内容
-                            //否则即是杂质，将mail_templates调出的内容作为邮件内容
-                            if ($rt['type'] == 'template') {
-                                $rt['template_content'] = $row['email_content'];
-                            }
-                            $arr                = $this->get_email_setting();
-                            $row['reply_email'] = $arr['smtp_mail'];
-                            $row                = array_merge($row, $arr);
-                            if ($rt['template_id'] && $rt['template_content']) {
-                                if (RC_Mail::send_mail('', $row['email'], $rt['template_subject'], $rt['template_content'], $rt['is_html'])) {
-                                    ecjia_admin::admin_log(sprintf(__('邮件标题是 %s', 'mail'), $rt['template_subject']) . '，' . sprintf(__('邮件地址是 %s', 'mail'), $row['email']), 'batch_send', 'email');
-                                    //发送成功,从列表中删除
-                                    \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($row['id']);
-
-                                    $record_count['send_success']++;
-                                } else {
-                                    //发送出错
-                                    if ($row['error'] < 3) {
-                                        $time = time();
-                                        $data = array(
-                                            'error'     => $row['error'] + 1,
-                                            'pri'       => 0,
-                                            'last_send' => $time
-                                        );
-                                        \Ecjia\App\Mail\EmailSendlist::EmailSendlistUpdate($row['id'], $data);
-
-                                    } else {
-                                        //将出错超次的纪录删除
-                                        \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($row['id']);
-                                    }
-                                    $record_count['send_error']++;
-                                }
-                            } else {
-                                //无效的邮件队列
-                                \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($row['id']);
-
-                                $record_count['noeffect']++;
-                            }
-                        }
-                        return $this->showmessage(sprintf(__('共 %d 条邮件发送完成！', 'mail'), $record_count['send_success']), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('refresh_url' => RC_Uri::url('mail/admin_view_sendlist/init')));
-                    }
-                    break;
-                default :
-                    break;
-            }
-        } else {
+        if (empty($ids)) {
             return $this->showmessage(__('没有选择消息', 'mail'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
         }
-    }
 
-    /**
-     * 全部发送
-     */
-    public function all_send()
-    {
-        $this->admin_priv('email_sendlist_send', ecjia::MSGTYPE_JSON);
+        $info = \Ecjia\App\Mail\EmailSendlist::EmailSendlistSelect($ids);
 
-        $data = \Ecjia\App\Mail\EmailSendlist::EmailSendlistSelect('', array('pri' => 'DESC', 'last_send' => 'ASC'));
+        switch ($action) {
+            case 'batchdel':
+                \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($ids);
 
-        if (!empty($data)) {
-            $record_count = array('empty_mail' => 0, 'send_success' => 0, 'send_error' => 0, 'noeffect' => 0);
-            foreach ($data as $key => $row) {
-                //发送列表不为空，邮件地址为空
-                if (!empty($row['id']) && empty($row['email'])) {
-                    \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($row['id']);
-
-                    $record_count['empty_mail']++;
-                    continue;
+                foreach ($info as $key => $v) {
+                    ecjia_admin::admin_log(sprintf(__('删除邮件记录是 %s，邮件地址是 %s', 'mail'), $v['template_subject'], $v['email']), 'batch_remove', 'email');
                 }
-                //查询相关模板
-                $rt = \Ecjia\App\Mail\MailTeplates::MailTemplatesInfo($row['template_id']);
 
-                //如果是模板，则将已存入email_sendlist的内容作为邮件内容
-                //否则即是杂质，将mail_templates调出的内容作为邮件内容
-                if ($rt['type'] == 'template') {
-                    $rt['template_content'] = $row['email_content'];
-                }
-                $arr = $this->get_email_setting();
-
-                $row['reply_email'] = $arr['smtp_mail'];
-                $row                = array_merge($row, $arr);
-                if ($rt['template_id'] && $rt['template_content']) {
-                    if (RC_Mail::send_mail('', $row['email'], $rt['template_subject'], $rt['template_content'], $rt['is_html'])) {
-                        //发送成功,从列表中删除
-                        ecjia_admin::admin_log(sprintf(__('邮件标题是 %s', 'mail'), $rt['template_subject']) . '，' . sprintf(__('邮件地址是 %s', 'mail'), $row['email']), 'all_send', 'email');
-                        \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($row['id']);
-
-                        $record_count['send_success']++;
-                    } else {
-                        //发送出错
-                        if ($row['error'] < 3) {
-                            $time = time();
-                            $data = array(
-                                'error'     => $row['error'] + 1,
-                                'pri'       => 0,
-                                'last_send' => $time
-                            );
-                            \Ecjia\App\Mail\EmailSendlist::EmailSendlistUpdate($row['id'], $data);
-
-                            $record_count['send_error']++;
-                        } else {
-                            //将出错超次的纪录删除
-                            \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($row['id']);
-
-                            $record_count['send_error']++;
-                        }
-                    }
-                } else {
-                    //无效的邮件队列
-                    \Ecjia\App\Mail\EmailSendlist::EmailSendlistDelete($row['id']);
-
-                    $record_count['noeffect']++;
-                }
-            }
+                return $this->showmessage(sprintf(__('共删除 %d 条记录，删除成功！', 'mail'), count($ids)), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('mail/admin_view_sendlist/init')));
+                break;
+            default :
+                break;
         }
-        return $this->showmessage(sprintf(__('共 %d 条邮件发送完成！', 'mail'), $record_count['send_success']), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('refresh_url' => RC_Uri::url('mail/admin_view_sendlist/init')));
     }
 
     /**
@@ -303,48 +172,43 @@ class AdminViewSendlistController extends AdminBase
      */
     private function get_send_list()
     {
-        $db_email_sendlist = RC_DB::connection(config('cashier.database_connection', 'default'))->table('email_sendlist as e');
+        $pri_id = $this->request->input('pri_id', null);
 
-        $typemail_id = isset($_GET['typemail_id']) ? $_GET['typemail_id'] : 0;
-
-        if ($typemail_id == 1) {
-            $db_email_sendlist->where('type', 'magazine');
-        } elseif ($typemail_id == 2) {
-            $db_email_sendlist->where('type', 'template');
-        }
-        $filter['type'] = $typemail_id;
-        if (!empty($_GET['pri_id']) || (isset($_GET['pri_id']) && trim($_GET['pri_id']) === '0')) {
-            $db_email_sendlist->where('pri', $_GET['pri_id']);
-        }
+        $query = function ($query) use ($pri_id) {
+            if (!is_null($pri_id)) {
+                return $query->where('pri', $pri_id);
+            }
+            return $query;
+        };
 
         $filter['sort_by']    = empty($_GET['sort_by']) ? 'pri' : trim($_GET['sort_by']);
         $filter['sort_order'] = empty($_GET['sort_order']) ? 'DESC' : trim($_GET['sort_order']);
 
-        $count = $db_email_sendlist->leftJoin('notification_templates as m', RC_DB::raw('m.template_id'), '=', RC_DB::raw('e.template_id'))->count(RC_DB::raw('e.id'));
+        $count = EmailSendlistModel::where($query)->count();
+
         $page  = new ecjia_page($count, 15, 5);
 
-        $row = $db_email_sendlist
-            ->select(RC_DB::raw('e.id, e.email, e.pri, e.error, FROM_UNIXTIME(e.last_send) AS last_send, m.template_subject, m.content_type'))
-            ->orderby($filter['sort_by'], $filter['sort_order'])
-            ->orderby('last_send', 'desc')
+        $row = EmailSendlistModel::with('mail_template_model')
+            ->select('id', 'template_id', 'email', 'pri', 'error', RC_DB::raw('FROM_UNIXTIME(last_send) AS last_send'))
+            ->where($query)
+            ->orderBy($filter['sort_by'], $filter['sort_order'])->orderBy('last_send', 'desc')
             ->take(15)
             ->skip($page->start_id - 1)
             ->get();
 
-        return array('item' => $row, 'filter' => $filter, 'page' => $page->show(2), 'desc' => $page->page_desc());
+        if ($row->isNotEmpty()) {
+            $row = $row->map(function ($item) {
+                $data = $item;
+                $data['template_subject'] = $item->mail_template_model->template_subject;
+                return $data;
+            });
+        }
+
+        $item = $row->toArray();
+
+        return array('item' => $item, 'filter' => $filter, 'page' => $page->show(2), 'desc' => $page->page_desc());
     }
 
-    private function get_email_setting()
-    {
-        $mail_config = RC_DB::connection(config('cashier.database_connection', 'default'))->table('shop_config')->where('parent_id', 5)->orderby('id', 'asc')->get();
-        $arr         = array();
-        if (!empty($mail_config)) {
-            foreach ($mail_config as $v) {
-                $arr[$v['code']] = $v['value'];
-            }
-        }
-        return $arr;
-    }
 }
 
 //end
