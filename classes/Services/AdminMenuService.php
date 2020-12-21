@@ -20,15 +20,15 @@ class AdminMenuService
         $menus = ecjia_admin::make_admin_menu('14_email_manage', __('邮件管理', 'mail'), '', 14);
 
         $submenus = array(
-            ecjia_admin::make_admin_menu('email_list', __('邮件订阅管理', 'mail'), RC_Uri::url('mail/admin_email_list/init'), 2)->add_purview('email_list_manage'),
-            ecjia_admin::make_admin_menu('view_sendlist', __('邮件队列管理', 'mail'), RC_Uri::url('mail/admin_view_sendlist/init'), 4)->add_purview('email_sendlist_manage'),
-            ecjia_admin::make_admin_menu('divider', '', '', 10)->add_purview('mail_template_manage'),
             ecjia_admin::make_admin_menu('mail_template', __('邮件模板', 'mail'), RC_Uri::url('mail/admin_template/init'), 11)->add_purview('mail_template_manage'),
             ecjia_admin::make_admin_menu('mail_event', __('邮件事件', 'mail'), RC_Uri::url('mail/admin_events/init'), 13)->add_purview('mail_events_manage'),
             ecjia_admin::make_admin_menu('mail_plugin', __('邮件渠道', 'mail'), RC_Uri::url('mail/admin_plugin/init'), 14)->add_purview('mail_plugin_manage'),
             ecjia_admin::make_admin_menu('mail_test', __('发送测试邮件', 'mail'), RC_Uri::url('mail/admin_mail_test/init'), 14)->add_purview('mail_plugin_manage'),
+            ecjia_admin::make_admin_menu('view_sendlist', __('邮件发送队列', 'mail'), RC_Uri::url('mail/admin_view_sendlist/init'), 16)->add_purview('email_sendlist_manage'),
+            ecjia_admin::make_admin_menu('divider', '', '', 20)->add_purview('mail_template_manage'),
+            ecjia_admin::make_admin_menu('email_list', __('邮件订阅管理', 'mail'), RC_Uri::url('mail/admin_email_list/init'), 21)->add_purview('email_list_manage'),
         );
-
+        
         $menus->add_submenu($submenus);
     	
     	return $menus;
