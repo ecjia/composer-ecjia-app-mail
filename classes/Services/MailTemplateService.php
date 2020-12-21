@@ -46,6 +46,7 @@
 //
 namespace Ecjia\App\Mail\Services;
 
+use Ecjia\App\Mail\Models\MailTemplateModel;
 use RC_DB;
 
 /**
@@ -70,10 +71,11 @@ class MailTemplateService
 	    if (empty($tpl_name)) {
 	        return false;
 	    }
-		
-	    $tpl = RC_DB::connection(config('cashier.database_connection', 'default'))->table('mail_templates')->where('template_code', $tpl_name)->select('template_subject', 'is_html', 'template_content')->first();
-	    
+
+        $tpl = MailTemplateModel::mail()->where('template_code', $tpl_name)->select('template_subject', 'content_type', 'template_content')->first();
+
 		$tpl['template_content'] = '{nocache}' . $tpl['template_content'] . '{/nocache}';
+		$tpl['is_html'] = $tpl['content_type'] == 'html' ? 1 : 0;
 
 		return $tpl;
 	}
