@@ -34,11 +34,11 @@ class MailRecord
     /**
      * 添加邮件发送记录
      * @param $email
-     * @param ?array $result
+     * @param array|\ecjia_error|null $result
      * @param int $priority
      * @return void
      */
-    public function addRecord($email, ?array $result, $priority = 1)
+    public function addRecord($email, $result, $priority = 1)
     {
         try {
             if (is_ecjia_error($result)) {
