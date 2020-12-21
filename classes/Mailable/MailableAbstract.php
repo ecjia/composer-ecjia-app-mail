@@ -2,7 +2,6 @@
 
 namespace Ecjia\App\Mail\Mailable;
 
-use Ecjia\App\Mail\Models\MailTemplateModel;
 use Illuminate\Support\HtmlString;
 
 abstract class MailableAbstract extends \Illuminate\Mail\Mailable
@@ -11,18 +10,6 @@ abstract class MailableAbstract extends \Illuminate\Mail\Mailable
      * @var string
      */
     protected $eventCode;
-
-    /**
-     * @var MailTemplateModel
-     */
-    protected $templateModel;
-
-
-    public function __construct()
-    {
-        $this->templateModel = (new MailTemplateModel())->getTemplateByCode($this->eventCode);
-
-    }
 
     public function build()
     {
@@ -80,24 +67,5 @@ abstract class MailableAbstract extends \Illuminate\Mail\Mailable
         $this->eventCode = $eventCode;
         return $this;
     }
-
-    /**
-     * @return MailTemplateModel
-     */
-    public function getTemplateModel(): ?MailTemplateModel
-    {
-        return $this->templateModel;
-    }
-
-    /**
-     * @param MailTemplateModel $templateModel
-     * @return MailableAbstract
-     */
-    public function setTemplateModel(MailTemplateModel $templateModel): MailableAbstract
-    {
-        $this->templateModel = $templateModel;
-        return $this;
-    }
-
 
 }
