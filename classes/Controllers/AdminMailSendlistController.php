@@ -199,7 +199,7 @@ class AdminMailSendlistController extends AdminBase
         if ($row->isNotEmpty()) {
             $row = $row->map(function ($item) {
                 $data = $item;
-                $data['template_subject'] = $item->mail_template_model->template_subject;
+                $data['template_subject'] = $item->mail_template_model->template_subject ?: __('临时邮件', 'mail');
                 return $data;
             });
         }
