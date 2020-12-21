@@ -320,11 +320,11 @@ class AdminViewSendlistController extends AdminBase
         $filter['sort_by']    = empty($_GET['sort_by']) ? 'pri' : trim($_GET['sort_by']);
         $filter['sort_order'] = empty($_GET['sort_order']) ? 'DESC' : trim($_GET['sort_order']);
 
-        $count = $db_email_sendlist->leftJoin('mail_templates as m', RC_DB::raw('m.template_id'), '=', RC_DB::raw('e.template_id'))->count(RC_DB::raw('e.id'));
+        $count = $db_email_sendlist->leftJoin('notification_templates as m', RC_DB::raw('m.template_id'), '=', RC_DB::raw('e.template_id'))->count(RC_DB::raw('e.id'));
         $page  = new ecjia_page($count, 15, 5);
 
         $row = $db_email_sendlist
-            ->select(RC_DB::raw('e.id, e.email, e.pri, e.error, FROM_UNIXTIME(e.last_send) AS last_send, m.template_subject, m.type'))
+            ->select(RC_DB::raw('e.id, e.email, e.pri, e.error, FROM_UNIXTIME(e.last_send) AS last_send, m.template_subject, m.content_type'))
             ->orderby($filter['sort_by'], $filter['sort_order'])
             ->orderby('last_send', 'desc')
             ->take(15)
