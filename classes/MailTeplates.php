@@ -80,7 +80,7 @@ class MailTeplates
         return RC_DB::connection(config('cashier.database_connection', 'default'))->table('mail_templates')
             ->where('type', $where)
             ->select($field)
-            ->get();
+            ->get()->toArray();
     }
     
     /**

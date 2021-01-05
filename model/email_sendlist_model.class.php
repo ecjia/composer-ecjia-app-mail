@@ -88,7 +88,7 @@ class email_sendlist_model extends Component_Model_Model
         if (!empty($ids)) {
             $db_email_sendlist->whereIn('id', $ids);
         }
-        return $db_email_sendlist->get();
+        return $db_email_sendlist->get()->toArray();
     }
 
     public function email_sendlist_update($id, $data)

@@ -82,7 +82,7 @@ class mail_templates_model extends Component_Model_Model
         return RC_DB::connection(config('cashier.database_connection', 'default'))->table('mail_templates')
             ->where('type', $where)
             ->select($field)
-            ->get();
+            ->get()->toArray();
     }
 
     public function mail_templates_update($where, $data)
