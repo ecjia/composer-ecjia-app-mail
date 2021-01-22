@@ -164,7 +164,6 @@ class AdminMailSendlistController extends AdminBase
                 }
 
                 return $this->showmessage(sprintf(__('共删除 %d 条记录，删除成功！', 'mail'), count($ids)), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('mail/admin_mail_sendlist/init')));
-                break;
             default :
                 break;
         }
