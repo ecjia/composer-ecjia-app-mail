@@ -49,6 +49,13 @@ namespace Ecjia\App\Mail\Models;
 
 use Royalcms\Component\Database\Eloquent\Model;
 
+/**
+ * Class MailTemplateModel
+ * @package Ecjia\App\Mail\Models
+ *
+ * @method \Royalcms\Component\Database\Eloquent\Model|\Royalcms\Component\Database\Eloquent\Builder mail()
+ * @method \Royalcms\Component\Database\Eloquent\Model|\Royalcms\Component\Database\Eloquent\Builder plugin($code)
+ */
 class MailTemplateModel extends Model
 {
 	protected $connection = 'ecjia';
@@ -61,8 +68,18 @@ class MailTemplateModel extends Model
      * @var bool
      */
     public $timestamps = false;
-    
-    
+
+    /**
+     * MailTemplateModel constructor.
+     * @param array $attributes
+     */
+    public function __construct(array $attributes = [])
+    {
+        $this->connection = config('ecjia.database_connection', 'default');
+
+        parent::__construct($attributes);
+    }
+
     /**
      * 限制查询只包括短信模板。
      *

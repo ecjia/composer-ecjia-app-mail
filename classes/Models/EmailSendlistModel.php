@@ -77,6 +77,17 @@ class EmailSendlistModel extends Model
     public $timestamps = false;
 
     /**
+     * EmailSendlistModel constructor.
+     * @param array $attributes
+     */
+    public function __construct(array $attributes = [])
+    {
+        $this->connection = config('ecjia.database_connection', 'default');
+
+        parent::__construct($attributes);
+    }
+
+    /**
      * 一对一
      * 邮件模板绑定的参数模板模型信息
      */
